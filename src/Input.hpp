@@ -41,6 +41,22 @@ class Button {
     std::string text;
 };
 
+class FileDisplay {
+    public:
+    FileDisplay(glm::uvec2 s, glm::uvec2 pos, glm::uvec2 mar, glm::uvec2 pad, glm::vec3 bg, glm::vec3 fg);
+    ~FileDisplay();
+
+    void render(Shader &s, Renderer &r);
+
+    glm::uvec2 position;
+    glm::uvec2 size;
+    glm::uvec2 margin;
+    glm::uvec2 padding;
+    glm::vec3 background;
+    glm::vec3 foreground;
+    std::string text;
+};
+
 class TextArea {
     public:
 
@@ -55,21 +71,5 @@ class TextArea {
     Action action;
     u64 textCursorColumn;
     u64 textCursorRow;
-    std::string text;
-};
-
-class FileDisplay {
-    public:
-    FileDisplay(glm::uvec2 s, glm::uvec2 pos, glm::uvec2 mar, glm::uvec2 pad, glm::vec3 bg, glm::vec3 fg);
-    ~FileDisplay();
-
-    void render(Shader &s, Renderer &r);
-
-    glm::uvec2 position;
-    glm::uvec2 size;
-    glm::uvec2 margin;
-    glm::uvec2 padding;
-    glm::vec3 background;
-    glm::vec3 foreground;
     std::string text;
 };

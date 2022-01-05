@@ -35,10 +35,10 @@ void Input::ParseText(int key, int action, int mods) {
         bool caps = (mods & GLFW_MOD_SHIFT) ^ (mods & GLFW_MOD_CAPS_LOCK);
         switch (key) {
             case GLFW_KEY_ENTER: {
-                *textArea.textBuffer + '\n';
+                textArea.textBuffer->Append('\n');
             } break;
             case GLFW_KEY_TAB: {
-                *textArea.textBuffer + '\t';
+                textArea.textBuffer->Append('\t');
             } break;
             case GLFW_KEY_BACKSPACE: {
                 textArea.textBuffer->Delete();
@@ -50,10 +50,10 @@ void Input::ParseText(int key, int action, int mods) {
             case GLFW_KEY_LEFT_ALT:
             case GLFW_KEY_RIGHT_ALT: break;
             case GLFW_KEY_UP: {
-
+                textArea.textBuffer->Descend();
             } break;
             case GLFW_KEY_DOWN: {
-
+                textArea.textBuffer->Ascend();
             } break;
             case GLFW_KEY_LEFT: {
                 textArea.textBuffer->Retreat();
@@ -62,10 +62,10 @@ void Input::ParseText(int key, int action, int mods) {
                 textArea.textBuffer->Advance();
             } break;
             case GLFW_KEY_HOME: {
-                textArea.textBuffer->FullRetreat();
+                textArea.textBuffer->LineRetreat();
             } break;
             case GLFW_KEY_END: {
-                textArea.textBuffer->FullAdvance();
+                textArea.textBuffer->LineAdvance();
             } break;
             case GLFW_KEY_A:
             case GLFW_KEY_B:
@@ -93,19 +93,19 @@ void Input::ParseText(int key, int action, int mods) {
             case GLFW_KEY_X:
             case GLFW_KEY_Y:
             case GLFW_KEY_Z: {
-                *textArea.textBuffer + (char)(key + 32 * !caps);
+                textArea.textBuffer->Append((char)(key + 32 * !caps));
             } break;
             case GLFW_KEY_0:
-                *textArea.textBuffer + (char)(key - 7 * (mods & GLFW_MOD_SHIFT));
+                textArea.textBuffer->Append((char)(key - 7 * (mods & GLFW_MOD_SHIFT)));
                 break;
             case GLFW_KEY_1:
-                *textArea.textBuffer + (char)(key - 16 * (mods & GLFW_MOD_SHIFT));
+                textArea.textBuffer->Append((char)(key - 16 * (mods & GLFW_MOD_SHIFT)));
                 break;
             case GLFW_KEY_2:
-                *textArea.textBuffer + (char)(key + 14 * (mods & GLFW_MOD_SHIFT));
+                textArea.textBuffer->Append((char)(key + 14 * (mods & GLFW_MOD_SHIFT)));
                 break;
             case GLFW_KEY_3:
-                *textArea.textBuffer + (char)(key - 16 * (mods & GLFW_MOD_SHIFT));
+                textArea.textBuffer->Append((char)(key - 16 * (mods & GLFW_MOD_SHIFT)));
                 break;
             case GLFW_KEY_4:
             case GLFW_KEY_5:
@@ -113,10 +113,10 @@ void Input::ParseText(int key, int action, int mods) {
             case GLFW_KEY_7:
             case GLFW_KEY_8:
             case GLFW_KEY_9: {
-                *textArea.textBuffer + (char)(key);
+                textArea.textBuffer->Append((char)(key));
             } break;
             default: {
-                *textArea.textBuffer + (char)key;
+                textArea.textBuffer->Append((char)key);
             }
         }
     }

@@ -3,23 +3,15 @@
 #include <cstring>
 
 TextBuffer::TextBuffer(std::string text) {
-    lineCount = 0;
-    size_t loc = 0;
-    loc = text.find('\n', loc);
-    lineCount++;
-    while (loc != std::string::npos) {
-        loc = text.find('\n', loc + 1);
-        lineCount++;
-    }
-    currentLine = lineCount - 1;
-    lines = new u16[lineCount];
-    loc = 0;
+    // size_t loc = 0;
+    // lines.push_back(loc);
     // loc = text.find('\n', loc);
-    lines[0] = 0;
-    for (u16 i = 1; i < lineCount; i++) {
-        loc = text.find('\n', loc) + 1;
-        lines[i] = loc;
-    }
+    // printf("%d\n", lines.back());
+    // while (loc != std::string::npos) {
+    //     lines.push_back(loc);
+    //     printf("%d\n", lines.back());
+    //     loc = text.find('\n', loc + 1);
+    // }
 
     strncpy(buffer, text.c_str(), MAX_BUFFER_SIZE);
     maxPreCursorIndex = strnlen(buffer, MAX_BUFFER_SIZE);
@@ -27,37 +19,17 @@ TextBuffer::TextBuffer(std::string text) {
     preCursorIndex = maxPreCursorIndex;
     postCursorIndex = minPostCursorIndex;
     buffer[minPostCursorIndex] = '\0';
+
 }
 
-TextBuffer::~TextBuffer() {
-    delete lines;
-}
-
-TextBuffer& TextBuffer::operator+(const char &rside) {
-    Append(rside);
-}
-
-TextBuffer& TextBuffer::operator+(const u16 &rside) {
-    Advance(rside);
-}
-
-TextBuffer& TextBuffer::operator-(const u16 &rside) {
-    Retreat(rside);
-}
-
-TextBuffer& TextBuffer::operator++() {
-    Advance();
-}
-
-TextBuffer& TextBuffer::operator--() {
-    Retreat();
-}
+TextBuffer::~TextBuffer() {}
 
 bool TextBuffer::Append(char c) {
     buffer[preCursorIndex] = c;
     preCursorIndex++;
     buffer[preCursorIndex] = '\0';
     maxPreCursorIndex++;
+
     return true;
 }
 
@@ -71,24 +43,11 @@ bool TextBuffer::Delete() {
     return true;
 }
 
-bool TextBuffer::Ascend(u16 distance) { 
-    if (currentLine + distance > lineCount) {
-        return false;
-    }
-    
-    Advance(lines[currentLine + distance] - lines[currentLine]);
-    currentLine += distance;
-
+bool TextBuffer::Ascend(u16 distance) {
     return true;
 }
+
 bool TextBuffer::Descend(u16 distance) {
-    if (currentLine - distance < 0) {
-        return false;
-    }
-
-    Retreat(lines[currentLine] - lines[currentLine - distance]);
-    currentLine -= distance;
-
     return true;
 }
 
@@ -112,7 +71,6 @@ bool TextBuffer::Retreat(u16 distance) {
     }
 
     memcpy(&buffer[postCursorIndex - distance], &buffer[preCursorIndex - distance], distance);
-
     preCursorIndex -= distance;
     postCursorIndex -= distance;
     buffer[preCursorIndex] = '\0';
@@ -120,12 +78,34 @@ bool TextBuffer::Retreat(u16 distance) {
     return true;
 }
 
+bool TextBuffer::LineAdvance() {
+    if (postCursorIndex == minPostCursorIndex) {
+        return false;
+    }
+    while (buffer[postCursorIndex] != '\n' && postCursorIndex != minPostCursorIndex) {
+        Advance();
+    }
+
+    return true;
+}
+
+bool TextBuffer::LineRetreat() {
+    if (preCursorIndex == 0) {
+        return false;
+    }
+    while (buffer[preCursorIndex - 1] != '\n' && preCursorIndex != 0) {
+        Retreat();
+    }
+
+    return true;
+}
+
 bool TextBuffer::FullAdvance() {
-    Advance(maxPreCursorIndex - preCursorIndex);
+    return Advance(maxPreCursorIndex - preCursorIndex);
 }
 
 bool TextBuffer::FullRetreat() {
-    Retreat(preCursorIndex);
+    return Retreat(preCursorIndex);
 }
 
 u16 TextBuffer::GetCursorPos() {
@@ -133,13 +113,9 @@ u16 TextBuffer::GetCursorPos() {
 }
 
 char *TextBuffer::ToString() {
-    char *str = new char[1024];
-    strncpy(str, buffer, 1024);
-    strncat(str, &buffer[postCursorIndex], 1024 - postCursorIndex);
+    // TODO: optimize size constraint
+    char *str = new char[MAX_BUFFER_SIZE];
+    strncpy(str, buffer, MAX_BUFFER_SIZE);
+    strncat(str, &buffer[postCursorIndex], MAX_BUFFER_SIZE - postCursorIndex);
     return str;
-}
-
-void TextBuffer::Test() {
-    printf("%s\n\n", buffer);
-    printf("%s\n\n", &buffer[postCursorIndex]);
 }

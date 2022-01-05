@@ -3,6 +3,7 @@
 #include "Defines.hpp"
 
 #include <string>
+#include <vector>
 
 static const int MAX_BUFFER_SIZE = 1024;
 
@@ -11,30 +12,25 @@ class TextBuffer {
     TextBuffer(std::string text);
     ~TextBuffer();
 
-    TextBuffer& operator+(const char &rside);
-    TextBuffer& operator+(const u16 &rside);
-    TextBuffer& operator-(const u16 &rside);
-    TextBuffer& operator++();
-    TextBuffer& operator--();
-
     bool Append(char c);
     bool Delete();
     bool Ascend(u16 distance = 1);
     bool Descend(u16 distance = 1);
     bool Advance(u16 distance = 1);
     bool Retreat(u16 distance = 1);
+    bool LineAdvance();
+    bool LineRetreat();
     bool FullAdvance();
     bool FullRetreat();
     u16 GetCursorPos();
-
     char *ToString();
-    void Test();
 
     private:
+
     char buffer[MAX_BUFFER_SIZE];
-    u16 *lines;
-    u16 lineCount;
+    std::vector<u16> lines;
     u16 currentLine;
+    u16 currentLineIndex;
     u16 preCursorIndex;
     u16 postCursorIndex;
     u16 maxPreCursorIndex;

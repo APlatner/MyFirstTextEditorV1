@@ -7,8 +7,8 @@ INCDIR := -I include -I /usr/include/freetype2
 SRCS := $(shell find $(SRCDIR) -type f -name *.cpp)
 OJBS := $(patsubst $(SRCDIR)/%, $(BINDIR)/%, $(SRCS:.cpp=.o))
 CFLAGS := -std=c++17 -g -Wall -Wpedantic
-LDFLAGS := -lpthread -lglfw -lGL -lGLEW  -lfreetype
-TARGET := $(BINDIR)/mc_runner_v$(VERSION)
+LDFLAGS := -lglfw -lGL -lGLEW  -lfreetype
+TARGET := $(BINDIR)/cpp_gl_test$(VERSION)
 
 .PHONY: run clean
 

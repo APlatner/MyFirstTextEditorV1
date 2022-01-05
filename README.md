@@ -23,3 +23,6 @@ Renderer
 FileManager
     * Handles creating files, defines a file display area using a text area
     * Allows user to load a folder and displays all of it's subfolders
+
+TextBuffer
+    * split buffer for storing currently editing text

@@ -255,3 +255,7 @@ void Renderer::renderChar(Shader &s, const char *text, glm::uvec2 pos, glm::uvec
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+void Renderer::WindowResizeCallback(GLFWwindow *window, int width, int height) {
+    glViewport(0, 0, width, height);
+}

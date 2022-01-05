@@ -1,20 +1,20 @@
 #pragma once
 
-#include "Shader.hpp"
-#include "Renderer.hpp"
+#include "renderer/Shader.hpp"
+#include "renderer/Renderer.hpp"
+#include "TextBuffer.hpp"
 
 #include <glm/glm.hpp>
 #include <functional>
 #include <vector>
 #include <string>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
-
-enum InputType {
-    INPUT_TITLE = 0,
-    INPUT_BUTTON,
-    INPUT_TEXTAREA,
-    INPUT_CHECKBOX,
-    INPUT_RADIO
+enum EventContext {
+    TOOL_BAR = 0,
+    TEXT_AREA,
+    FILE_DISPLAY
 };
 
 enum EventType {
@@ -23,23 +23,6 @@ enum EventType {
 };
 
 typedef std::function<void()> Action;
-
-class Button {
-    public:
-    Button(glm::uvec2 s, glm::uvec2 pos, glm::uvec2 mar, glm::uvec2 pad, glm::vec3 bg, glm::vec3 fg, Action a);
-    ~Button();
-
-    void render(Shader &s, Renderer &r);
-
-    glm::uvec2 size;
-    glm::uvec2 position;
-    glm::uvec2 margin;
-    glm::uvec2 padding;
-    glm::vec3 background;
-    glm::vec3 foreground;
-    Action action;
-    std::string text;
-};
 
 class FileDisplay {
     public:
@@ -59,6 +42,7 @@ class FileDisplay {
 
 class TextArea {
     public:
+    TextArea();
 
     void render(Shader &s, Renderer &r, bool cursor);
 
@@ -69,7 +53,19 @@ class TextArea {
     glm::vec3 background;
     glm::vec3 foreground;
     Action action;
-    u64 textCursorColumn;
-    u64 textCursorRow;
     std::string text;
+    TextBuffer *textBuffer;
+};
+
+class Input {
+    public:
+    Input();
+
+    void ParseText(int key, int action, int mods);
+
+    static void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+    static void MouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
+
+    TextArea textArea;
+    EventContext context;
 };

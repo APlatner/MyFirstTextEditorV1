@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Defines.hpp"
+#include "../Defines.hpp"
 #include "Shader.hpp"
 
 #include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
 #include <map>
@@ -25,6 +26,8 @@ class Renderer {
     void renderChar(Shader &s, const char *text, glm::uvec2 pos, glm::uvec2 size, float scale, glm::vec3 color, bool showCursor, float margin);
     void initFreetype(const char *fontPath);
     
+    static void WindowResizeCallback(GLFWwindow *window, int width, int height);
+
     private:
     u32 vbo, vao;
     u8 *font;

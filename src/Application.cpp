@@ -1,5 +1,5 @@
 #include "Application.hpp"
-
+#include "TextBuffer.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -16,7 +16,6 @@ Application::Application(int width, int height, const char *title, const char *f
     windowWidth{width}, windowHeight{height}, windowTitle{title}, fontPath{font} {
     initWindow();
     initRenderer();
-    initInput();
     initFilesystem();
 }
 
@@ -42,8 +41,9 @@ void Application::initWindow() {
     }
 
     glfwMakeContextCurrent(window);
-    glfwSetWindowSizeCallback(window, windowSizeCallback);
-    glfwSetKeyCallback(window, keyCallback);
+    glfwSetWindowSizeCallback(window, Renderer::WindowResizeCallback);
+    glfwSetKeyCallback(window, Input::KeyCallback);
+    glfwSetMouseButtonCallback(window, Input::MouseButtonCallback);
 
     if (glewInit() != GLEW_OK) {
         glfwDestroyWindow(window);
@@ -61,29 +61,17 @@ void Application::initRenderer() {
     shader.init("res/shaders/text_shader.vert", "res/shaders/text_shader.frag");
     shader.use();
 
-
-
     glm::mat4 projection = glm::ortho(0.0f, (float)windowWidth, (float)windowHeight, 0.0f);
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 }
 
-void action() {
-    
-}
-
-void Application::initInput() {
-    Button start(glm::uvec2(0, 600), glm::uvec2(100, 100), glm::uvec2(10, 10), glm::uvec2(10, 10), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), action);
-    inputs.push_back(start);
-}
-
 void Application::initFilesystem() {
-    filesystem.open("src/Config.hpp");
+    filesystem.open("test.txt");
     filesystem.activateFile();
 }
 
 void Application::run() {
     double lastTime = glfwGetTime();
-    std::string display = "";
     bool cursor = false;
     TextArea textArea;
     textArea.position = glm::uvec2{200, 0};
@@ -91,9 +79,12 @@ void Application::run() {
     textArea.background = glm::vec3{0.5f, 0.5f, 0.5f};
     textArea.foreground = glm::vec3{1.0f, 1.0f, 1.0f};
     textArea.text = filesystem.precursorText;
-    glfwSetWindowUserPointer(window, &textArea.text);
+    textArea.textBuffer = new TextBuffer(textArea.text);
+    Input input;
+    input.textArea = textArea;
+    glfwSetWindowUserPointer(window, &input);
 
-    FileDisplay fileDisplay(glm::uvec2{0, 0}, glm::uvec2{200, 25}, glm::uvec2{0,0}, glm::uvec2{0,0}, glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec3{1.0f, 1.0f, 1.0f});
+    // FileDisplay fileDisplay(glm::uvec2{0, 0}, glm::uvec2{200, 25}, glm::uvec2{0,0}, glm::uvec2{0,0}, glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec3{1.0f, 1.0f, 1.0f});
     
     while (!glfwWindowShouldClose(window)) {
         double currentTime = glfwGetTime();
@@ -106,102 +97,15 @@ void Application::run() {
             }
             lastTime += 0.5;
         }
+
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        for (Button &button : inputs) {
-            button.render(shader, renderer);
-        }
         textArea.render(shader, renderer, cursor);
-        fileDisplay.render(shader, renderer);
+        // fileDisplay.render(shader, renderer);
         glfwSwapBuffers(window);
         glfwWaitEvents();
     }
     filesystem.precursorText = textArea.text;
     filesystem.close();
     glfwSetWindowUserPointer(window, NULL);
-}
-
-void Application::windowSizeCallback(GLFWwindow *window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
-
-void Application::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
-    if (action != GLFW_RELEASE) {
-        bool caps = (mods & GLFW_MOD_SHIFT) ^ (mods & GLFW_MOD_CAPS_LOCK);
-        std::string *str = (std::string*)glfwGetWindowUserPointer(window);
-        switch (key) {
-            case GLFW_KEY_ESCAPE: {
-                glfwSetWindowShouldClose(window, true);
-                return;
-            } break;
-            case GLFW_KEY_ENTER: {
-                *str += '\n';
-            } break;
-            case GLFW_KEY_TAB: {
-                *str += '\t';
-            } break;
-            case GLFW_KEY_BACKSPACE: {
-                if (str->length() > 0) {
-                    str->pop_back();
-                }
-            } break;
-            case GLFW_KEY_LEFT_SHIFT: 
-            case GLFW_KEY_LEFT_CONTROL: 
-            case GLFW_KEY_RIGHT_SHIFT: 
-            case GLFW_KEY_RIGHT_CONTROL: 
-            case GLFW_KEY_LEFT_ALT:
-            case GLFW_KEY_RIGHT_ALT: break;
-            case GLFW_KEY_A:
-            case GLFW_KEY_B:
-            case GLFW_KEY_C:
-            case GLFW_KEY_D:
-            case GLFW_KEY_E:
-            case GLFW_KEY_F:
-            case GLFW_KEY_G:
-            case GLFW_KEY_H:
-            case GLFW_KEY_I:
-            case GLFW_KEY_J:
-            case GLFW_KEY_K:
-            case GLFW_KEY_L:
-            case GLFW_KEY_M:
-            case GLFW_KEY_N:
-            case GLFW_KEY_O:
-            case GLFW_KEY_P:
-            case GLFW_KEY_Q:
-            case GLFW_KEY_R:
-            case GLFW_KEY_S:
-            case GLFW_KEY_T:
-            case GLFW_KEY_U:
-            case GLFW_KEY_V:
-            case GLFW_KEY_W:
-            case GLFW_KEY_X:
-            case GLFW_KEY_Y:
-            case GLFW_KEY_Z: {
-                *str += (char)(key + 32 * !caps);
-            } break;
-            case GLFW_KEY_0:
-                *str += (char)(key - 7 * (mods & GLFW_MOD_SHIFT));
-                break;
-            case GLFW_KEY_1:
-                *str += (char)(key - 16 * (mods & GLFW_MOD_SHIFT));
-                break;
-            case GLFW_KEY_2:
-                *str += (char)(key + 14 * (mods & GLFW_MOD_SHIFT));
-                break;
-            case GLFW_KEY_3:
-                *str += (char)(key - 16 * (mods & GLFW_MOD_SHIFT));
-                break;
-            case GLFW_KEY_4:
-            case GLFW_KEY_5:
-            case GLFW_KEY_6:
-            case GLFW_KEY_7:
-            case GLFW_KEY_8:
-            case GLFW_KEY_9: {
-                *str += (char)(key);
-            } break;
-            default: {
-                *str += (char)key;
-            }
-        }
-    }
 }

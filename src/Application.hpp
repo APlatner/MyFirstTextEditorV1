@@ -5,8 +5,8 @@
 #include <vector>
 
 #include "Filesystem.hpp"
-#include "Renderer.hpp"
-#include "Shader.hpp"
+#include "renderer/Renderer.hpp"
+#include "renderer/Shader.hpp"
 #include "Input.hpp"
 
 class Application {
@@ -20,7 +20,6 @@ class Application {
     // init functions
     void initWindow();
     void initRenderer();
-    void initInput();
     void initFilesystem();
 
     // glfw callbacks
@@ -39,6 +38,5 @@ class Application {
     Renderer renderer;
     const char *fontPath;
 
-    std::vector<Button> inputs;
     std::vector<TextArea> textAreas;
 };

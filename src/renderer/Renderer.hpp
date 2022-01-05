@@ -22,6 +22,8 @@ class Renderer {
     Renderer();
     ~Renderer();
 
+    void DrawFrame();
+
     void render(Shader &s, glm::uvec2 pos, glm::uvec2 size, glm::vec3 color);
     void renderChar(Shader &s, const char *text, glm::uvec2 pos, glm::uvec2 size, float scale, glm::vec3 color, bool showCursor, u32 cursorLoc, float margin);
     void initFreetype(const char *fontPath);
@@ -29,6 +31,8 @@ class Renderer {
     static void WindowResizeCallback(GLFWwindow *window, int width, int height);
 
     private:
+    void BeginFrame();
+
     u32 vbo, vao;
     u8 *font;
     u32 fontID;

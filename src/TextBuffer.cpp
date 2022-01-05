@@ -62,9 +62,13 @@ bool TextBuffer::Append(char c) {
 }
 
 bool TextBuffer::Delete() {
+    if (preCursorIndex == 0) {
+        return false;
+    }
     preCursorIndex--;
     maxPreCursorIndex--;
     buffer[preCursorIndex] = '\0';
+    return true;
 }
 
 bool TextBuffer::Ascend(u16 distance) { 
@@ -114,6 +118,18 @@ bool TextBuffer::Retreat(u16 distance) {
     buffer[preCursorIndex] = '\0';
 
     return true;
+}
+
+bool TextBuffer::FullAdvance() {
+    Advance(maxPreCursorIndex - preCursorIndex);
+}
+
+bool TextBuffer::FullRetreat() {
+    Retreat(preCursorIndex);
+}
+
+u16 TextBuffer::GetCursorPos() {
+    return preCursorIndex;
 }
 
 char *TextBuffer::ToString() {

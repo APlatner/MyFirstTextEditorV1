@@ -26,3 +26,5 @@ FileManager
 
 TextBuffer
     * split buffer for storing currently editing text
+    * currently storing 1024 characters
+    * can move cursor

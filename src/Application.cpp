@@ -84,7 +84,7 @@ void Application::run() {
     input.textArea = textArea;
     glfwSetWindowUserPointer(window, &input);
 
-    // FileDisplay fileDisplay(glm::uvec2{0, 0}, glm::uvec2{200, 25}, glm::uvec2{0,0}, glm::uvec2{0,0}, glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec3{1.0f, 1.0f, 1.0f});
+    FileDisplay fileDisplay(glm::uvec2{0, 0}, glm::uvec2{200, 25}, glm::uvec2{0,0}, glm::uvec2{0,0}, glm::vec3{0.5f, 0.5f, 0.5f}, glm::vec3{1.0f, 1.0f, 1.0f});
     
     while (!glfwWindowShouldClose(window)) {
         double currentTime = glfwGetTime();
@@ -98,14 +98,14 @@ void Application::run() {
             lastTime += 0.5;
         }
 
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        renderer.DrawFrame();
+
         textArea.render(shader, renderer, cursor);
-        // fileDisplay.render(shader, renderer);
+        fileDisplay.render(shader, renderer);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    filesystem.precursorText = textArea.text;
+    filesystem.precursorText = textArea.textBuffer->ToString();
     filesystem.close();
     glfwSetWindowUserPointer(window, NULL);
 }

@@ -8,7 +8,7 @@ TextArea::TextArea() {
 
 void TextArea::render(Shader &s, Renderer &r, bool cursor) {
     r.render(s, position, size, background);
-    r.renderChar(s, textBuffer->ToString(), position, size, 1.0f, foreground, cursor, textBuffer->preCursorIndex - 1, 1.618f);
+    r.renderChar(s, textBuffer->ToString(), position, size, 1.0f, foreground, cursor, textBuffer->GetCursorPos() - 1, 1.618f);
 }
 
 FileDisplay::FileDisplay(glm::uvec2 pos, glm::uvec2 s, glm::uvec2 mar, glm::uvec2 pad, glm::vec3 bg, glm::vec3 fg) : position{pos}, size{s}, margin{mar}, padding{pad}, background{bg}, foreground{fg} {
@@ -41,12 +41,10 @@ void Input::ParseText(int key, int action, int mods) {
                 *textArea.textBuffer + '\t';
             } break;
             case GLFW_KEY_BACKSPACE: {
-                if (textArea.textBuffer->preCursorIndex > 0) {
-                    textArea.textBuffer->Delete();
-                }
+                textArea.textBuffer->Delete();
             } break;
             case GLFW_KEY_LEFT_SHIFT: 
-            case GLFW_KEY_LEFT_CONTROL: 
+            case GLFW_KEY_LEFT_CONTROL:
             case GLFW_KEY_RIGHT_SHIFT: 
             case GLFW_KEY_RIGHT_CONTROL: 
             case GLFW_KEY_LEFT_ALT:
@@ -62,6 +60,12 @@ void Input::ParseText(int key, int action, int mods) {
             } break;
             case GLFW_KEY_RIGHT: {
                 textArea.textBuffer->Advance();
+            } break;
+            case GLFW_KEY_HOME: {
+                textArea.textBuffer->FullRetreat();
+            } break;
+            case GLFW_KEY_END: {
+                textArea.textBuffer->FullAdvance();
             } break;
             case GLFW_KEY_A:
             case GLFW_KEY_B:
@@ -119,11 +123,16 @@ void Input::ParseText(int key, int action, int mods) {
 }
 
 void Input::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
-    if (key == GLFW_KEY_ESCAPE) {
-        glfwSetWindowShouldClose(window, true);
-        return;
-    }
     Input *input = (Input*)glfwGetWindowUserPointer(window);
+    switch (key) {
+        case GLFW_KEY_ESCAPE: {
+            glfwSetWindowShouldClose(window, true);
+            return;
+        } break;
+        case GLFW_KEY_LEFT_CONTROL: {
+
+        } break;
+    }
     if (input->context == TEXT_AREA) {
         input->ParseText(key, action, mods);   
     }

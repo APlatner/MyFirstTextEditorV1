@@ -14,7 +14,7 @@
 enum EventContext {
     TOOL_BAR = 0,
     TEXT_AREA,
-    FILE_DISPLAY
+    FILE_SELECT
 };
 
 enum EventType {

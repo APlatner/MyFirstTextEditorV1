@@ -179,7 +179,7 @@ void Renderer::render(Shader &s, glm::uvec2 pos, glm::uvec2 size, glm::vec3 colo
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Renderer::renderChar(Shader &s, const char *text, glm::uvec2 pos, glm::uvec2 size, float scale, glm::vec3 color, bool showCursor, float margin) {
+void Renderer::renderChar(Shader &s, const char *text, glm::uvec2 pos, glm::uvec2 size, float scale, glm::vec3 color, bool showCursor, u32 cursorLoc, float margin) {
     if (text == NULL) {
         return;
     }
@@ -228,8 +228,7 @@ void Renderer::renderChar(Shader &s, const char *text, glm::uvec2 pos, glm::uvec
 
             x += (c.Advance >> 6) * scale;
         }
-    }
-    if (showCursor) {
+        if (showCursor && i == cursorLoc) {
         float xpos = x;
         float ypos = y;
 
@@ -251,6 +250,7 @@ void Renderer::renderChar(Shader &s, const char *text, glm::uvec2 pos, glm::uvec
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);

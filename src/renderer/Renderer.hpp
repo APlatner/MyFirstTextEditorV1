@@ -23,7 +23,7 @@ class Renderer {
     ~Renderer();
 
     void render(Shader &s, glm::uvec2 pos, glm::uvec2 size, glm::vec3 color);
-    void renderChar(Shader &s, const char *text, glm::uvec2 pos, glm::uvec2 size, float scale, glm::vec3 color, bool showCursor, float margin);
+    void renderChar(Shader &s, const char *text, glm::uvec2 pos, glm::uvec2 size, float scale, glm::vec3 color, bool showCursor, u32 cursorLoc, float margin);
     void initFreetype(const char *fontPath);
     
     static void WindowResizeCallback(GLFWwindow *window, int width, int height);

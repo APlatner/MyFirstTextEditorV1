@@ -8,7 +8,7 @@ TextArea::TextArea() {
 
 void TextArea::render(Shader &s, Renderer &r, bool cursor) {
     r.render(s, position, size, background);
-    r.renderChar(s, textBuffer->ToString(), position, size, 1.0f, foreground, cursor, 1.618f);
+    r.renderChar(s, textBuffer->ToString(), position, size, 1.0f, foreground, cursor, textBuffer->preCursorIndex - 1, 1.618f);
 }
 
 FileDisplay::FileDisplay(glm::uvec2 pos, glm::uvec2 s, glm::uvec2 mar, glm::uvec2 pad, glm::vec3 bg, glm::vec3 fg) : position{pos}, size{s}, margin{mar}, padding{pad}, background{bg}, foreground{fg} {
@@ -23,7 +23,7 @@ FileDisplay::~FileDisplay() {
 
 void FileDisplay::render(Shader &s, Renderer &r) {
     r.render(s, position, size, background);
-    r.renderChar(s, text.c_str(), position, size, 1.0f, foreground, false, 1.618f);
+    r.renderChar(s, text.c_str(), position, size, 1.0f, foreground, false, 0, 1.618f);
 }
 
 Input::Input() {
@@ -58,10 +58,10 @@ void Input::ParseText(int key, int action, int mods) {
 
             } break;
             case GLFW_KEY_LEFT: {
-                *textArea.textBuffer--;
+                textArea.textBuffer->Retreat();
             } break;
             case GLFW_KEY_RIGHT: {
-                *textArea.textBuffer++;
+                textArea.textBuffer->Advance();
             } break;
             case GLFW_KEY_A:
             case GLFW_KEY_B:

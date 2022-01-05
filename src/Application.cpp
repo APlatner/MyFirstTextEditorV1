@@ -103,7 +103,7 @@ void Application::run() {
         textArea.render(shader, renderer, cursor);
         // fileDisplay.render(shader, renderer);
         glfwSwapBuffers(window);
-        glfwWaitEvents();
+        glfwPollEvents();
     }
     filesystem.precursorText = textArea.text;
     filesystem.close();

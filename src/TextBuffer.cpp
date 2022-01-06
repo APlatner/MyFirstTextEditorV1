@@ -66,7 +66,7 @@ bool TextBuffer::Advance(u16 distance) {
 }
 
 bool TextBuffer::Retreat(u16 distance) {
-    if (preCursorIndex - distance < 0 || postCursorIndex - distance < maxPreCursorIndex) {
+    if (preCursorIndex - distance < 0) {
         return false;
     }
 

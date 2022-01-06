@@ -11,12 +11,6 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-enum EventContext {
-    TOOL_BAR = 0,
-    TEXT_AREA,
-    FILE_SELECT
-};
-
 enum EventType {
     EVENT_ON_CLICK = 0,
     EVENT_ON_RELEASE
@@ -67,5 +61,4 @@ class Input {
     static void MouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
 
     TextArea textArea;
-    EventContext context;
 };

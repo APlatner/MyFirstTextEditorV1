@@ -1,2 +1,3 @@
-Hello: true
-font: 1
+cursor:
+  - true
+  - 0.5

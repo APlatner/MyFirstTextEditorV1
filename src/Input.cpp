@@ -27,7 +27,6 @@ void FileDisplay::render(Shader &s, Renderer &r) {
 }
 
 Input::Input() {
-    context = TEXT_AREA;
 }
 
 void Input::ParseText(int key, int action, int mods) {
@@ -133,9 +132,7 @@ void Input::KeyCallback(GLFWwindow *window, int key, int scancode, int action, i
 
         } break;
     }
-    if (input->context == TEXT_AREA) {
-        input->ParseText(key, action, mods);   
-    }
+    input->ParseText(key, action, mods);
 }
 
 void Input::MouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {

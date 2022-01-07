@@ -13,7 +13,9 @@
 const int fontsize = 16;
 
 Renderer::Renderer() {
-    
+    if (glewInit() != GLEW_OK) {
+        std::runtime_error("Failed to init GLEW!");
+    }
 }
 
 Renderer::~Renderer() {

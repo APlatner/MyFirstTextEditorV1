@@ -28,12 +28,16 @@ FileManager
 
 ### Application
 1. start
-    * initialize application
+    * init filesystem
+    * init window and input manager
+    * init renderer
 2. run application
     * render application
     * get input
 3. shutdown application
-    * shutdown application components
+    * shutdown renderer
+    * shutdown window
+    * shutdown filesystem
 
 ### Input Manager
 * Create window, get input

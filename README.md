@@ -26,10 +26,11 @@ FileManager
 
 ## Stages
 
-### Application
+### Application Lifetime
 1. start
+    * init input manager
     * init filesystem
-    * init window and input manager
+    * init window
     * init renderer
 2. run application
     * render application
@@ -38,16 +39,18 @@ FileManager
     * shutdown renderer
     * shutdown window
     * shutdown filesystem
+    * shutdown input manager
 
 ### Input Manager
-* Create window, get input
+* Get input, register events
 
-### Event Manager
-* Handle event registration, link to input
+### Window
+* create window
 
 ### Filesystem Manager
 * Handles creating files, defines a file display area using a text area
 * Allows user to load a folder and displays all of it's subfolders
+* manages the split text buffer
 
 ### Renderer
 * Create a texture map for each font being used

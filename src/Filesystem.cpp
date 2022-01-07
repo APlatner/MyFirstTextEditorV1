@@ -31,13 +31,14 @@ Filesystem::Filesystem(InputManager &im) : inputManager{im} {
         GLFW_KEY_X,
         GLFW_KEY_Y,
         GLFW_KEY_Z,
+        GLFW_KEY_SPACE,
         GLFW_KEY_BACKSPACE,
         GLFW_KEY_ENTER,
         GLFW_KEY_PERIOD,
         GLFW_KEY_LEFT,
         GLFW_KEY_RIGHT
     };
-    for (u16 i = 0; i < 31; i++) {
+    for (u16 i = 0; i < 32; i++) {
         inputManager.RegisterEvent(codes[i], this, ControlEvent);
     }
     activeFileName = "";
@@ -71,13 +72,14 @@ Filesystem::~Filesystem() {
         GLFW_KEY_X,
         GLFW_KEY_Y,
         GLFW_KEY_Z,
+        GLFW_KEY_SPACE,
         GLFW_KEY_BACKSPACE,
         GLFW_KEY_ENTER,
         GLFW_KEY_PERIOD,
         GLFW_KEY_LEFT,
         GLFW_KEY_RIGHT
     };
-    for (u16 i = 0; i < 31; i++) {
+    for (u16 i = 0; i < 32; i++) {
         inputManager.UnRegisterEvent(codes[i], this, ControlEvent);
     }
     if (activeFile == NULL) {
@@ -164,6 +166,9 @@ void Filesystem::TextContext(u16 code, EventData data) {
             break;
         case GLFW_KEY_RIGHT:
             textBuffer.Advance();
+            break;
+        case GLFW_KEY_SPACE:
+            textBuffer.Append(' ');
             break;
         case GLFW_KEY_PERIOD:
             textBuffer.Append('.');

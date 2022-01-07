@@ -5,13 +5,12 @@
 #include <string>
 #include <vector>
 
-static const int MAX_BUFFER_SIZE = 1024;
-
 class TextBuffer {
     public:
-    TextBuffer(std::string text);
+    TextBuffer();
     ~TextBuffer();
 
+    bool LoadText(const char *text);
     bool Append(char c);
     bool Delete();
     bool Ascend(u16 distance = 1);
@@ -26,11 +25,8 @@ class TextBuffer {
     char *ToString();
 
     private:
-
-    char buffer[MAX_BUFFER_SIZE];
+    char *buffer;
     std::vector<u16> lines;
-    u16 currentLine;
-    u16 currentLineIndex;
     u16 preCursorIndex;
     u16 postCursorIndex;
     u16 maxPreCursorIndex;

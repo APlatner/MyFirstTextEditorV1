@@ -20,8 +20,6 @@ Application::~Application() {
 }
 
 void Application::initRenderer() {
-
-
     renderer.initFreetype("res/fonts/NotoSansMono-Regular-Nerd-Font-Complete.ttf");
 
     glEnable(GL_CULL_FACE);
@@ -35,24 +33,9 @@ void Application::initRenderer() {
 }
 
 void Application::Run() {
-    double lastTime = glfwGetTime();
-    bool cursor = false;
-    
     while (!window.ShouldClose()) {
-        double currentTime = glfwGetTime();
-        
-        if (currentTime - lastTime >= 0.5) {
-            if (cursor) {
-                cursor = false;
-            } else {
-                cursor = true;
-            }
-            lastTime += 0.5;
-        }
-
         renderer.DrawFrame();
         window.SwapBuffers();
         glfwPollEvents();
     }
-    
 }

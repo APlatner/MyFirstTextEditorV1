@@ -12,6 +12,7 @@ enum EventContext {
     NULL_CONTEXT = 0,
     CONTROL_CONTEXT,
     TEXT_CONTEXT,
+    FILE_CONTEXT,
     MAX_CONTEXT
 };
 
@@ -41,6 +42,7 @@ class InputManager {
 
     bool FireEvent(u16 code, void *sender, EventData data);
     const EventContext GetEventContext() { return context; }
+    void SetEventContext(EventContext c) { context = c; }
 
     static void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
     static void MouseButtonCallback(GLFWwindow *window, int button, int action, int mods);

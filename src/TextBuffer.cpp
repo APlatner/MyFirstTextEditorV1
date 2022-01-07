@@ -2,27 +2,26 @@
 
 #include <cstring>
 
-TextBuffer::TextBuffer(std::string text) {
-    // size_t loc = 0;
-    // lines.push_back(loc);
-    // loc = text.find('\n', loc);
-    // printf("%d\n", lines.back());
-    // while (loc != std::string::npos) {
-    //     lines.push_back(loc);
-    //     printf("%d\n", lines.back());
-    //     loc = text.find('\n', loc + 1);
-    // }
+static const int MAX_BUFFER_SIZE = 1024;
 
-    strncpy(buffer, text.c_str(), MAX_BUFFER_SIZE);
+TextBuffer::TextBuffer() {
+    buffer = new char[MAX_BUFFER_SIZE];
+}
+
+TextBuffer::~TextBuffer() {
+    delete buffer;
+}
+
+bool TextBuffer::LoadText(const char *text) {
+    strncpy(buffer, text, MAX_BUFFER_SIZE);
     maxPreCursorIndex = strnlen(buffer, MAX_BUFFER_SIZE);
     minPostCursorIndex = MAX_BUFFER_SIZE - 1;
     preCursorIndex = maxPreCursorIndex;
     postCursorIndex = minPostCursorIndex;
     buffer[minPostCursorIndex] = '\0';
 
+    return true;
 }
-
-TextBuffer::~TextBuffer() {}
 
 bool TextBuffer::Append(char c) {
     buffer[preCursorIndex] = c;

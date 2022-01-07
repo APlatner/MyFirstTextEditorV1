@@ -20,9 +20,9 @@ class Application {
     // init functions
     void initRenderer();
 
-    Filesystem filesystem;
     InputManager inputManager;
     Window window{inputManager};
+    Filesystem filesystem{inputManager};
 
     Renderer renderer;
     Shader shader;

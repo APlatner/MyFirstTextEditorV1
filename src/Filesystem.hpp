@@ -2,6 +2,7 @@
 
 #include "Defines.hpp"
 #include "input/InputManager.hpp"
+#include "TextBuffer.hpp"
 
 #include <cstdio>
 #include <cstdlib>
@@ -10,14 +11,17 @@
 
 class Filesystem {
     public:
-    Filesystem();
+    Filesystem(InputManager &im);
     ~Filesystem();
 
-    void open(const char *filepath);
-    void close();
-    void activateFile();
+    void Open();
+    void Close();
+    void SaveFile();
 
-    std::string currentWorkingDirectory;
+    InputManager &inputManager;
+    TextBuffer textBuffer;
+    // std::string currentWorkingDirectory;
+    std::string activeFileName;
     FILE *activeFile;
     std::string precursorText;
     std::string postcursorText;

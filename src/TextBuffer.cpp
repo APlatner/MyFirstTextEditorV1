@@ -23,6 +23,8 @@ bool TextBuffer::LoadText(const char *text) {
     postCursorIndex = minPostCursorIndex;
     buffer[minPostCursorIndex] = '\0';
 
+    printf("precursorindex: %d\n", preCursorIndex);
+
     return true;
 }
 
@@ -110,7 +112,7 @@ bool TextBuffer::FullRetreat() {
     return Retreat(preCursorIndex);
 }
 
-u16 TextBuffer::GetCursorPos() {
+const u16 TextBuffer::GetCursorPos() {
     return preCursorIndex;
 }
 

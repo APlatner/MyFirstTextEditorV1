@@ -33,9 +33,18 @@ void Application::initRenderer() {
 }
 
 void Application::Run() {
+    double startTime = glfwGetTime();
+    double currentTime;
+    bool showCursor = true;
     while (!window.ShouldClose()) {
+        currentTime = glfwGetTime();
+        if ((currentTime - startTime) > 0.5f) {
+            startTime = currentTime;
+            showCursor = !showCursor;
+        }
+
         renderer.DrawFrame();
-        renderer.renderChar(shader, filesystem.textBuffer.ToString().c_str(), glm::vec2{10, 10}, glm::vec2{600, 600}, 1, glm::vec3{1.0f}, true, filesystem.textBuffer.GetCursorPos(), 1.618);
+        renderer.renderChar(shader, filesystem.textBuffer.ToString().c_str(), glm::vec2{10, 10}, glm::vec2{600, 600}, 1, glm::vec3{1.0f}, showCursor, filesystem.textBuffer.GetCursorPos(), 1.618);
         window.SwapBuffers();
         glfwPollEvents();
     }

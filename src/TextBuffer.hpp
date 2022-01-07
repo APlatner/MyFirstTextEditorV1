@@ -21,7 +21,7 @@ class TextBuffer {
     bool LineRetreat();
     bool FullAdvance();
     bool FullRetreat();
-    u16 GetCursorPos();
+    const u16 GetCursorPos();
     const std::string ToString();
 
     private:

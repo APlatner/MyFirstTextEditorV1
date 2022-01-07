@@ -111,17 +111,17 @@ void Filesystem::SaveFile() {
 
 bool Filesystem::ControlEvent(u16 code, void *sender, void *listener, EventData data) {
     Filesystem *filesystem = (Filesystem*)listener;
-    if (filesystem->context == FILE_CONTEXT && data.action == GLFW_PRESS) {
-        filesystem->FileContext(code, data);
-    } else if (filesystem->context == TEXT_CONTEXT && data.action == GLFW_PRESS) {
-        filesystem->TextContext(code, data);
-    } else if (code == GLFW_KEY_O && data.action == GLFW_PRESS && data.mods & GLFW_MOD_CONTROL) {
+    if (code == GLFW_KEY_O && data.action == GLFW_PRESS && data.mods & GLFW_MOD_CONTROL) {
         filesystem->context = FILE_CONTEXT;
         printf("FILE_CONTEXT\n");
     } else if (code == GLFW_KEY_S && data.action == GLFW_PRESS && data.mods & GLFW_MOD_CONTROL) {
         filesystem->SaveFile();
     } else if (code == GLFW_KEY_Q && data.action == GLFW_PRESS && data.mods & GLFW_MOD_CONTROL) {
         filesystem->Close();
+    } else if (filesystem->context == FILE_CONTEXT && data.action == GLFW_PRESS) {
+        filesystem->FileContext(code, data);
+    } else if (filesystem->context == TEXT_CONTEXT && data.action == GLFW_PRESS) {
+        filesystem->TextContext(code, data);
     }
 
     return true;

@@ -25,7 +25,9 @@ class Filesystem {
     FILE *activeFile;
     std::string precursorText;
     std::string postcursorText;
+    EventContext context;
 
     private:
     static bool ControlEvent(u16 code, void *sender, void *listener, EventData data);
+    void FileContext(u16 code, EventData data);
 };

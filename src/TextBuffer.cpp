@@ -6,6 +6,9 @@ static const int MAX_BUFFER_SIZE = 1024;
 
 TextBuffer::TextBuffer() {
     buffer = new char[MAX_BUFFER_SIZE];
+    buffer[0] = '\0';
+    maxPreCursorIndex = 0;
+    minPostCursorIndex = MAX_BUFFER_SIZE - 1;
 }
 
 TextBuffer::~TextBuffer() {
@@ -13,6 +16,7 @@ TextBuffer::~TextBuffer() {
 }
 
 bool TextBuffer::LoadText(const char *text) {
+    printf("%s\n", text);
     strncpy(buffer, text, MAX_BUFFER_SIZE);
     maxPreCursorIndex = strnlen(buffer, MAX_BUFFER_SIZE);
     minPostCursorIndex = MAX_BUFFER_SIZE - 1;
@@ -111,10 +115,12 @@ u16 TextBuffer::GetCursorPos() {
     return preCursorIndex;
 }
 
-char *TextBuffer::ToString() {
+const std::string TextBuffer::ToString() {
     // TODO: optimize size constraint
-    char *str = new char[MAX_BUFFER_SIZE];
-    strncpy(str, buffer, MAX_BUFFER_SIZE);
-    strncat(str, &buffer[postCursorIndex], MAX_BUFFER_SIZE - postCursorIndex);
-    return str;
+    text = "";
+    if (maxPreCursorIndex != 0) {
+        text += buffer;
+        text += &buffer[postCursorIndex];
+    }
+    return text;
 }

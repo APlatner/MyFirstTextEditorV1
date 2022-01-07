@@ -37,8 +37,6 @@ Filesystem::Filesystem(InputManager &im) : inputManager{im} {
     for (u16 i = 0; i < 28; i++) {
         inputManager.RegisterEvent(codes[i], this, ControlEvent);
     }
-    // inputManager.RegisterEvent(GLFW_KEY_O, this, ControlEvent);
-    // inputManager.RegisterEvent(GLFW_KEY_ENTER, this, ControlEvent);
     activeFileName = "";
 }
 
@@ -76,8 +74,6 @@ Filesystem::~Filesystem() {
     for (u16 i = 0; i < 28; i++) {
         inputManager.UnRegisterEvent(codes[i], this, ControlEvent);
     }
-    // inputManager.UnRegisterEvent(GLFW_KEY_O, this, ControlEvent);
-    // inputManager.UnRegisterEvent(GLFW_KEY_ENTER, this, ControlEvent);
     if (activeFile == NULL) {
         Close();
     }
@@ -88,12 +84,11 @@ void Filesystem::Open() {
     std::string text = "";
     char buffer[256];
     while (!feof(activeFile)) {
+        buffer[0] = '\0';
         fgets(buffer, 256, activeFile);
         text += buffer;
     }
     textBuffer.LoadText(text.c_str());
-    freopen(NULL, "w", activeFile);
-    printf("%s\n", textBuffer.ToString());
 }
 
 void Filesystem::Close() {
@@ -103,22 +98,17 @@ void Filesystem::Close() {
 }
 
 void Filesystem::SaveFile() {
-
+    freopen(NULL, "w", activeFile);
+    fprintf(activeFile, "%s", textBuffer.ToString().c_str());
+    printf("SAVED\n");
 }
 
 bool Filesystem::ControlEvent(u16 code, void *sender, void *listener, EventData data) {
     Filesystem *filesystem = (Filesystem*)listener;
-    if (filesystem->inputManager.GetEventContext() == FILE_CONTEXT && code != GLFW_KEY_ENTER && data.action == GLFW_PRESS) {
-        filesystem->activeFileName += (char)(code + 32 * !(data.mods & (GLFW_MOD_SHIFT ^ GLFW_MOD_CAPS_LOCK)));
-        printf("%c", (char)(code + 32 * !(data.mods & (GLFW_MOD_SHIFT ^ GLFW_MOD_CAPS_LOCK))));
-        fflush(stdout);
-    } else if (filesystem->inputManager.GetEventContext() == FILE_CONTEXT && code == GLFW_KEY_ENTER && data.action == GLFW_PRESS) {
-        printf("\n");
-        filesystem->Open();
-        filesystem->inputManager.SetEventContext(TEXT_CONTEXT);
-        printf("TEXT_CONTEXT\n");
+    if (filesystem->context == FILE_CONTEXT && data.action == GLFW_PRESS) {
+        filesystem->FileContext(code, data);
     } else if (code == GLFW_KEY_O && data.action == GLFW_PRESS && data.mods & GLFW_MOD_CONTROL) {
-        filesystem->inputManager.SetEventContext(FILE_CONTEXT);
+        filesystem->context = FILE_CONTEXT;
         printf("FILE_CONTEXT\n");
     } else if (code == GLFW_KEY_S && data.action == GLFW_PRESS && data.mods & GLFW_MOD_CONTROL) {
         filesystem->SaveFile();
@@ -127,4 +117,28 @@ bool Filesystem::ControlEvent(u16 code, void *sender, void *listener, EventData 
     }
 
     return true;
+}
+
+void Filesystem::FileContext(u16 code, EventData data) {
+    switch (code) {
+        case GLFW_KEY_BACKSPACE:
+            activeFileName.pop_back();
+            break;
+        case GLFW_KEY_ENTER: {
+            printf("\n");
+            Open();
+            context = TEXT_CONTEXT;
+            printf("TEXT_CONTEXT\n");
+        } break;
+        case GLFW_KEY_PERIOD: {
+            activeFileName += '.';
+            printf("%c", '.');
+            fflush(stdout);
+        } break;
+        default: {
+            activeFileName += (char)(code + 32 * !(data.mods & (GLFW_MOD_SHIFT ^ GLFW_MOD_CAPS_LOCK)));
+            printf("%c", (char)(code + 32 * !(data.mods & (GLFW_MOD_SHIFT ^ GLFW_MOD_CAPS_LOCK))));
+            fflush(stdout);
+        }
+    }
 }

@@ -10,7 +10,7 @@ class TextBuffer {
     TextBuffer();
     ~TextBuffer();
 
-    bool LoadText(const char *text);
+    bool LoadText(const char *t);
     bool Append(char c);
     bool Delete();
     bool Ascend(u16 distance = 1);
@@ -22,10 +22,11 @@ class TextBuffer {
     bool FullAdvance();
     bool FullRetreat();
     u16 GetCursorPos();
-    char *ToString();
+    const std::string ToString();
 
     private:
     char *buffer;
+    std::string text;
     std::vector<u16> lines;
     u16 preCursorIndex;
     u16 postCursorIndex;

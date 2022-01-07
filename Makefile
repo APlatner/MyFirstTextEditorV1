@@ -1,5 +1,4 @@
-VERSION := 1.0.0
-CPP := clang++
+CPP := g++
 SRCDIR := src
 BINDIR := bin
 INCDIR := -I $(SRCDIR) -I /usr/include/freetype2
@@ -8,7 +7,7 @@ SRCS := $(shell find $(SRCDIR) -type f -name *.cpp)
 OJBS := $(patsubst $(SRCDIR)/%, $(BINDIR)/%, $(SRCS:.cpp=.o))
 CFLAGS := -std=c++17 -g -Wall -Wpedantic
 LDFLAGS := -lglfw -lGL -lGLEW  -lfreetype
-TARGET := $(BINDIR)/cpp_gl_test$(VERSION)
+TARGET := $(BINDIR)/byte_me_v1
 
 .PHONY: run clean
 

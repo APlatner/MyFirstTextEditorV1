@@ -154,7 +154,6 @@ void Filesystem::FileContext(u16 code, EventData data) {
 void Filesystem::TextContext(u16 code, EventData data) {
     switch (code) {
         case GLFW_KEY_BACKSPACE:
-            printf("deleting\n");
             textBuffer.Delete();
             break;
         case GLFW_KEY_ENTER:

@@ -44,7 +44,7 @@ void Application::Run() {
         }
 
         renderer.DrawFrame();
-        renderer.renderChar(shader, filesystem.textBuffer.ToString().c_str(), glm::vec2{10, 10}, glm::vec2{600, 600}, 1, glm::vec3{1.0f}, showCursor, filesystem.textBuffer.GetCursorPos(), 1.618);
+        renderer.renderChar(shader, filesystem.textBuffer.ToString().c_str(), glm::vec2{10, 10}, glm::vec2{600, 600}, 1, glm::vec3{1.0f}, showCursor, filesystem.textBuffer.GetCursorPos() - 1, 1.618);
         window.SwapBuffers();
         glfwPollEvents();
     }

@@ -1,6 +1,8 @@
 #pragma once
 
-#include <fstream>
+#include "Defines.hpp"
+#include "input/InputManager.hpp"
+
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -19,4 +21,7 @@ class Filesystem {
     FILE *activeFile;
     std::string precursorText;
     std::string postcursorText;
+
+    private:
+    static bool ControlEvent(u16 code, void *sender, void *listener, EventData data);
 };

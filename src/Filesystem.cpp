@@ -31,3 +31,7 @@ void Filesystem::activateFile() {
         precursorText += buffer;
     }
 }
+
+bool Filesystem::ControlEvent(u16 code, void *sender, void *listener, EventData data) {
+    
+}

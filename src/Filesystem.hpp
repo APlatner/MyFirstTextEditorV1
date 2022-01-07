@@ -30,4 +30,5 @@ class Filesystem {
     private:
     static bool ControlEvent(u16 code, void *sender, void *listener, EventData data);
     void FileContext(u16 code, EventData data);
+    void TextContext(u16 code, EventData data);
 };

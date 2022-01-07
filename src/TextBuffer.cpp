@@ -16,7 +16,6 @@ TextBuffer::~TextBuffer() {
 }
 
 bool TextBuffer::LoadText(const char *text) {
-    printf("%s\n", text);
     strncpy(buffer, text, MAX_BUFFER_SIZE);
     maxPreCursorIndex = strnlen(buffer, MAX_BUFFER_SIZE);
     minPostCursorIndex = MAX_BUFFER_SIZE - 1;

@@ -31,10 +31,13 @@ Filesystem::Filesystem(InputManager &im) : inputManager{im} {
         GLFW_KEY_X,
         GLFW_KEY_Y,
         GLFW_KEY_Z,
+        GLFW_KEY_BACKSPACE,
         GLFW_KEY_ENTER,
-        GLFW_KEY_PERIOD
+        GLFW_KEY_PERIOD,
+        GLFW_KEY_LEFT,
+        GLFW_KEY_RIGHT
     };
-    for (u16 i = 0; i < 28; i++) {
+    for (u16 i = 0; i < 31; i++) {
         inputManager.RegisterEvent(codes[i], this, ControlEvent);
     }
     activeFileName = "";
@@ -68,10 +71,13 @@ Filesystem::~Filesystem() {
         GLFW_KEY_X,
         GLFW_KEY_Y,
         GLFW_KEY_Z,
+        GLFW_KEY_BACKSPACE,
         GLFW_KEY_ENTER,
-        GLFW_KEY_PERIOD
+        GLFW_KEY_PERIOD,
+        GLFW_KEY_LEFT,
+        GLFW_KEY_RIGHT
     };
-    for (u16 i = 0; i < 28; i++) {
+    for (u16 i = 0; i < 31; i++) {
         inputManager.UnRegisterEvent(codes[i], this, ControlEvent);
     }
     if (activeFile == NULL) {
@@ -107,6 +113,8 @@ bool Filesystem::ControlEvent(u16 code, void *sender, void *listener, EventData 
     Filesystem *filesystem = (Filesystem*)listener;
     if (filesystem->context == FILE_CONTEXT && data.action == GLFW_PRESS) {
         filesystem->FileContext(code, data);
+    } else if (filesystem->context == TEXT_CONTEXT && data.action == GLFW_PRESS) {
+        filesystem->TextContext(code, data);
     } else if (code == GLFW_KEY_O && data.action == GLFW_PRESS && data.mods & GLFW_MOD_CONTROL) {
         filesystem->context = FILE_CONTEXT;
         printf("FILE_CONTEXT\n");
@@ -139,6 +147,30 @@ void Filesystem::FileContext(u16 code, EventData data) {
             activeFileName += (char)(code + 32 * !(data.mods & (GLFW_MOD_SHIFT ^ GLFW_MOD_CAPS_LOCK)));
             printf("%c", (char)(code + 32 * !(data.mods & (GLFW_MOD_SHIFT ^ GLFW_MOD_CAPS_LOCK))));
             fflush(stdout);
+        }
+    }
+}
+
+void Filesystem::TextContext(u16 code, EventData data) {
+    switch (code) {
+        case GLFW_KEY_BACKSPACE:
+            printf("deleting\n");
+            textBuffer.Delete();
+            break;
+        case GLFW_KEY_ENTER:
+            textBuffer.Append('\n');
+            break;
+        case GLFW_KEY_LEFT:
+            textBuffer.Retreat();
+            break;
+        case GLFW_KEY_RIGHT:
+            textBuffer.Advance();
+            break;
+        case GLFW_KEY_PERIOD:
+            textBuffer.Append('.');
+            break;
+        default: {
+            textBuffer.Append((char)(code + 32 * !(data.mods & (GLFW_MOD_SHIFT ^ GLFW_MOD_CAPS_LOCK))));
         }
     }
 }

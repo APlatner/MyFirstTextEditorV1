@@ -54,56 +54,12 @@ void InputManager::KeyCallback(GLFWwindow *window, int key, int scancode, int ac
         return;
     }
 
-    // switch (action) {
-    //     case GLFW_PRESS:
-    //         inputManager->OnKeyPress(key, mods);
-    //         break;
-    //     case GLFW_RELEASE:
-    //         inputManager->OnKeyRelease(key, mods);
-    //     default:
-    //         break;
-    // }
-
     EventData data{action, mods};
     inputManager->FireEvent(key, inputManager, data);
 }
 
 void InputManager::MouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
     
-}
-
-void InputManager::OnKeyPress(int key, int mods) {
-    EventData data{GLFW_PRESS, mods};
-    if (context == CONTROL_CONTEXT) {
-        switch (key) {
-            case GLFW_KEY_S:
-                FireEvent(key, this, data);
-                break;
-            default:
-                printf("Default\n");
-        }
-    } else if (context == NULL_CONTEXT) {
-        switch (key) {
-            case GLFW_KEY_LEFT_CONTROL:
-                context = CONTROL_CONTEXT;
-            default:
-                printf("Default\n");
-        }
-    }
-}
-
-void InputManager::OnKeyRelease(int key, int mods) {
-    EventData data{GLFW_RELEASE, mods};
-    if (context == CONTROL_CONTEXT) {
-        // FireEvent(code, )
-    } else if (context == NULL_CONTEXT) {
-        switch (key) {
-            case GLFW_KEY_LEFT_CONTROL:
-                context = CONTROL_CONTEXT;
-            default:
-                printf("Default\n");
-        }
-    }
 }
 
 bool InputManager::ControlCallback(u16 code, void *sender, void *listener, EventData data) {

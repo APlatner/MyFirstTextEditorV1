@@ -12,7 +12,9 @@ Filesystem::Filesystem(InputManager &im) : inputManager{im} {
 Filesystem::~Filesystem() {
     inputManager.UnRegisterEvent(GLFW_KEY_O, this, ControlEvent);
     inputManager.UnRegisterEvent(GLFW_KEY_ENTER, this, ControlEvent);
-    Close();
+    if (activeFile == NULL) {
+        Close();
+    }
 }
 
 void Filesystem::Open() {

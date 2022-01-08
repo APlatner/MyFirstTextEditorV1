@@ -11,6 +11,7 @@ class TextBuffer {
     ~TextBuffer();
 
     bool LoadText(const char *t);
+    bool ClearText();
     bool Append(char c);
     bool Delete();
     bool Ascend(u16 distance = 1);

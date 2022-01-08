@@ -23,7 +23,14 @@ bool TextBuffer::LoadText(const char *text) {
     postCursorIndex = minPostCursorIndex;
     buffer[minPostCursorIndex] = '\0';
 
-    printf("precursorindex: %d\n", preCursorIndex);
+    return true;
+}
+
+bool TextBuffer::ClearText() {
+    maxPreCursorIndex = 0;
+    preCursorIndex = 0;
+    postCursorIndex = minPostCursorIndex;
+    buffer[0] = '\0';
 
     return true;
 }

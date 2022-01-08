@@ -5,6 +5,16 @@
 
 Filesystem::Filesystem(InputManager &im) : inputManager{im} {
     u16 codes[] = {
+        GLFW_KEY_0,
+        GLFW_KEY_1,
+        GLFW_KEY_2,
+        GLFW_KEY_3,
+        GLFW_KEY_4,
+        GLFW_KEY_5,
+        GLFW_KEY_6,
+        GLFW_KEY_7,
+        GLFW_KEY_8,
+        GLFW_KEY_9,
         GLFW_KEY_A,
         GLFW_KEY_B,
         GLFW_KEY_C,
@@ -36,9 +46,11 @@ Filesystem::Filesystem(InputManager &im) : inputManager{im} {
         GLFW_KEY_ENTER,
         GLFW_KEY_PERIOD,
         GLFW_KEY_LEFT,
-        GLFW_KEY_RIGHT
+        GLFW_KEY_RIGHT,
+        GLFW_KEY_HOME,
+        GLFW_KEY_END
     };
-    for (u16 i = 0; i < 32; i++) {
+    for (u16 i = 0; i < 44; i++) {
         inputManager.RegisterEvent(codes[i], this, ControlEvent);
     }
     activeFileName = "";
@@ -46,6 +58,16 @@ Filesystem::Filesystem(InputManager &im) : inputManager{im} {
 
 Filesystem::~Filesystem() {
     u16 codes[] = {
+        GLFW_KEY_0,
+        GLFW_KEY_1,
+        GLFW_KEY_2,
+        GLFW_KEY_3,
+        GLFW_KEY_4,
+        GLFW_KEY_5,
+        GLFW_KEY_6,
+        GLFW_KEY_7,
+        GLFW_KEY_8,
+        GLFW_KEY_9,
         GLFW_KEY_A,
         GLFW_KEY_B,
         GLFW_KEY_C,
@@ -77,9 +99,11 @@ Filesystem::~Filesystem() {
         GLFW_KEY_ENTER,
         GLFW_KEY_PERIOD,
         GLFW_KEY_LEFT,
-        GLFW_KEY_RIGHT
+        GLFW_KEY_RIGHT,
+        GLFW_KEY_HOME,
+        GLFW_KEY_END
     };
-    for (u16 i = 0; i < 32; i++) {
+    for (u16 i = 0; i < 44; i++) {
         inputManager.UnRegisterEvent(codes[i], this, ControlEvent);
     }
     if (activeFile == NULL) {
@@ -102,6 +126,7 @@ void Filesystem::Open() {
 void Filesystem::Close() {
     activeFileName = "";
     fclose(activeFile);
+    textBuffer.ClearText();
     printf("CLOSED\n");
 }
 
@@ -155,6 +180,12 @@ void Filesystem::FileContext(u16 code, EventData data) {
 
 void Filesystem::TextContext(u16 code, EventData data) {
     switch (code) {
+        case GLFW_KEY_HOME:
+            textBuffer.LineRetreat();
+            break;
+        case GLFW_KEY_END:
+            textBuffer.LineAdvance();
+            break;
         case GLFW_KEY_BACKSPACE:
             textBuffer.Delete();
             break;

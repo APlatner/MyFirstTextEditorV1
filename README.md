@@ -60,3 +60,10 @@ FileManager
 ### Text Data
 * split buffer for storing currently editing text
 * linked list of buffers?
+
+### Features
+* display hardware accelerated text
+* ~~open, edit, save, and close files~~
+* display current working directory
+* allow for yaml configuration of color scheme, syntax highlighting, etc..
+* integrated terminal support

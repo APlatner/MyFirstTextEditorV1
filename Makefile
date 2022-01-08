@@ -1,4 +1,4 @@
-CPP := g++
+CPP := clang++
 SRCDIR := src
 BINDIR := bin
 INCDIR := -I $(SRCDIR) -I /usr/include/freetype2

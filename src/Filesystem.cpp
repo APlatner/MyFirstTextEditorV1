@@ -1,5 +1,6 @@
 #include "Filesystem.hpp"
 
+#include <GL/glew.h>
 #include <unistd.h>
 #include <iostream>
 
@@ -109,6 +110,85 @@ Filesystem::~Filesystem() {
     if (activeFile == NULL) {
         Close();
     }
+}
+
+bool Filesystem::InitRenderer() {
+    s.init("res/shaders/text_shader.vert", "res/shaders/text_shader.frag");
+}
+
+bool Filesystem::PrepBuffers() {
+    // if (text == NULL) {
+    //     return;
+    // }
+    // glUniform3f(glGetUniformLocation(s.ID, "textColor"), color.x, color.y, color.z);
+    // glActiveTexture(GL_TEXTURE0);
+    // glBindVertexArray(vao);
+    // bool full = false;
+    // float x = pos.x;
+    // float y = pos.y;
+    // x -= deltaX;
+    // y -= deltaY;
+    // for (uint32_t i = 0; text[i] != '\0'; i++) {
+    //     Character c = characters[text[i]];
+    //     if (text[i] == '\n') {
+    //         x = pos.x;
+    //         y += characters['I'].Size.y * scale * margin;
+    //     } else if (text[i] == '\t') {
+    //         x += (characters['a'].Advance >> 6) * scale * 4;
+    //     } else if ((x < size.x + pos.x ) && (x >= pos.x) && (y < size.y + pos.y) && y >= pos.y) {
+    //         float xpos = x + c.Bearing.x * scale;
+    //         float ypos = y + (fontsize  - c.Bearing.y) * scale;
+
+    //         float w = c.Size.x * scale;
+    //         float h = c.Size.y * scale;
+
+    //         float vertices[6][4] = {
+    //             {xpos,      ypos + h,   c.Start.x, c.End.y },
+    //             {xpos + w,  ypos,       c.End.x, c.Start.y },
+    //             {xpos,      ypos,       c.Start.x, c.Start.y },
+                
+    //             {xpos,      ypos + h,   c.Start.x, c.End.y },
+    //             {xpos + w,  ypos + h,   c.End.x, c.End.y },
+    //             {xpos + w,  ypos,       c.End.x, c.Start.y }
+    //         };
+
+    //         if (!full) {
+    //             glBindTexture(GL_TEXTURE_2D, fontID);
+    //             glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    //             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+    //             glBindBuffer(GL_ARRAY_BUFFER, 0);
+    //             glDrawArrays(GL_TRIANGLES, 0, 6);
+    //         }
+
+    //         x += (c.Advance >> 6) * scale;
+    //     }
+    //     if (showCursor && i == cursorLoc && y > 0) {
+    //     float xpos = x;
+    //     float ypos = y;
+
+    //     float w = fontsize / 12 * scale;
+    //     float h = fontsize * scale;
+
+    //     float vertices[6][4] = {
+    //         {xpos,      ypos + h,   0.0f, 1.0f },
+    //         {xpos + w,  ypos,       1.0f, 0.0f },
+    //         {xpos,      ypos,       0.0f, 0.0f },
+            
+    //         {xpos,      ypos + h,   0.0f, 1.0f },
+    //         {xpos + w,  ypos + h,   1.0f, 1.0f },
+    //         {xpos + w,  ypos,       1.0f, 0.0f }
+    //     };
+
+    //     glBindTexture(GL_TEXTURE_2D, cursorID);
+    //     glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    //     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+    //     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    //     glDrawArrays(GL_TRIANGLES, 0, 6);
+    // }
+    // }
+    // glBindVertexArray(0);
+    // glBindTexture(GL_TEXTURE_2D, 0);
+    // vbo.StoreData();
 }
 
 void Filesystem::Open() {

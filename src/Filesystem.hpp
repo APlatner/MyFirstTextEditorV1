@@ -2,7 +2,10 @@
 
 #include "Defines.hpp"
 #include "input/InputManager.hpp"
-#include "TextBuffer.hpp"
+#include "container/TextBuffer.hpp"
+#include "renderer/Shader.hpp"
+#include "renderer/VertexBuffer.hpp"
+#include "renderer/IndexBuffer.hpp"
 
 #include <cstdio>
 #include <cstdlib>
@@ -14,6 +17,9 @@ class Filesystem {
     Filesystem(InputManager &im);
     ~Filesystem();
 
+    bool InitRenderer();
+    bool PrepBuffers();
+
     void Open();
     void Close();
     void SaveFile();
@@ -23,9 +29,10 @@ class Filesystem {
     // std::string currentWorkingDirectory;
     std::string activeFileName;
     FILE *activeFile;
-    std::string precursorText;
-    std::string postcursorText;
     EventContext context;
+    Shader s;
+    VertexBuffer vbo;
+    IndexBuffer ibo;
 
     private:
     static bool ControlEvent(u16 code, void *sender, void *listener, EventData data);

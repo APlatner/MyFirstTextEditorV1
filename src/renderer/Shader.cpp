@@ -11,7 +11,7 @@ char** readFile(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (file != NULL) {
         fseek(file, 0, SEEK_END);
-        unsigned long len = ftell(file);
+        uint64_t len = ftell(file);
         fseek(file, 0, SEEK_SET);
 
         char *buffer = (char*)malloc(sizeof(char) * bufferSize);

@@ -1,8 +1,14 @@
 
 #include "Renderer.hpp"
+#include "VertexBuffer.hpp"
+#include "IndexBuffer.hpp"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <cstdlib>
 #include <cstdio>
@@ -18,6 +24,17 @@ Renderer::Renderer(InputManager &im) : inputManager{im} {
     if (glewInit() != GLEW_OK) {
         std::runtime_error("Failed to init GLEW!");
     }
+
+    initFreetype("res/fonts/NotoSansMono-Regular-Nerd-Font-Complete.ttf");
+
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    s.init("res/shaders/text_shader.vert", "res/shaders/text_shader.frag");
+    s.use();
+
+    glm::mat4 projection = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f);
+    glUniformMatrix4fv(glGetUniformLocation(s.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 }
 
 Renderer::~Renderer() {
@@ -112,7 +129,6 @@ void Renderer::initFreetype(const char *fontPath) {
             glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
             face->glyph->advance.x
         };
-        // printf("Character: %c, Start: (%f, %f), End: (%f, %f)\n", c, character.Start.x, character.Start.y, character.End.x, character.End.y);
         characters.insert(std::pair<char, Character>(c, character));
     }
 
@@ -162,29 +178,33 @@ void Renderer::initFreetype(const char *fontPath) {
     glBindVertexArray(0);
 }
 
-void Renderer::render(Shader &s, glm::uvec2 pos, glm::uvec2 size, glm::vec3 color) {
-    glUniform3f(glGetUniformLocation(s.ID, "textColor"), color.x, color.y, color.z);
-    glActiveTexture(GL_TEXTURE0);
-    glBindVertexArray(vao);
+void Renderer::render(Shader &shader, VertexBuffer &vertexBuffer, IndexBuffer &indexBuffer) {
+    shader.use();
+    vertexBuffer.Bind();
+    // indexBuffer.Bind();
+    // glDrawElements(GL_TRIANGLES, indexBuffer.GetCount(), )
+    // glUniform3f(glGetUniformLocation(s.ID, "textColor"), color.x, color.y, color.z);
+    // glActiveTexture(GL_TEXTURE0);
+    // glBindVertexArray(vao);
+    // glm::uvec2 pos, glm::uvec2 size, glm::vec3 color @params
+    // float vertices[6][4] = {
+    //     {(float)pos.x, (float)(pos.y + size.y), 0.0f, 1.0f},
+    //     {(float)(pos.x + size.x), (float)pos.y, 1.0f, 0.0f},
+    //     {(float)pos.x, (float)pos.y,            0.0f, 0.0f},
 
-    float vertices[6][4] = {
-        {(float)pos.x, (float)(pos.y + size.y), 0.0f, 1.0f},
-        {(float)(pos.x + size.x), (float)pos.y, 1.0f, 0.0f},
-        {(float)pos.x, (float)pos.y,            0.0f, 0.0f},
+    //     {(float)pos.x, (float)(pos.y + size.y), 0.0f, 1.0f},
+    //     {(float)(pos.x + size.x), (float)(pos.y + size.y), 1.0f, 1.0f},
+    //     {(float)(pos.x + size.x), (float)pos.y, 1.0f, 0.0f}
+    // };
 
-        {(float)pos.x, (float)(pos.y + size.y), 0.0f, 1.0f},
-        {(float)(pos.x + size.x), (float)(pos.y + size.y), 1.0f, 1.0f},
-        {(float)(pos.x + size.x), (float)pos.y, 1.0f, 0.0f}
-    };
-
-    glBindTexture(GL_TEXTURE_2D, buttonID);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    // glBindTexture(GL_TEXTURE_2D, buttonID);
+    // glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    // glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Renderer::renderChar(Shader &s, const char *text, glm::uvec2 pos, glm::uvec2 size, float scale, glm::vec3 color, bool showCursor, u32 cursorLoc, float margin) {
+void Renderer::renderChar(const char *text, glm::uvec2 pos, glm::uvec2 size, float scale, glm::vec3 color, bool showCursor, u32 cursorLoc, float margin) {
     if (text == NULL) {
         return;
     }
@@ -269,6 +289,8 @@ void Renderer::BeginFrame() {
 
 void Renderer::WindowResizeCallback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
+    // glm::mat4 projection = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f);
+    // glUniformMatrix4fv(glGetUniformLocation(s.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 }
 
 bool Renderer::RendererCallback(u16 code, void *sender, void *listener, EventData data) {

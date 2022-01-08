@@ -2,6 +2,8 @@
 
 #include "../Defines.hpp"
 #include "Shader.hpp"
+#include "VertexBuffer.hpp"
+#include "IndexBuffer.hpp"
 #include "input/InputManager.hpp"
 
 #include <GL/glew.h>
@@ -25,8 +27,8 @@ class Renderer {
 
     void DrawFrame();
 
-    void render(Shader &s, glm::uvec2 pos, glm::uvec2 size, glm::vec3 color);
-    void renderChar(Shader &s, const char *text, glm::uvec2 pos, glm::uvec2 size, float scale, glm::vec3 color, bool showCursor, u32 cursorLoc, float margin);
+    void render(Shader &shader, VertexBuffer &vertexBuffer, IndexBuffer &indexBuffer);
+    void renderChar(const char *text, glm::uvec2 pos, glm::uvec2 size, float scale, glm::vec3 color, bool showCursor, u32 cursorLoc, float margin);
     void initFreetype(const char *fontPath);
     
     static void WindowResizeCallback(GLFWwindow *window, int width, int height);
@@ -39,7 +41,6 @@ class Renderer {
     static bool RendererCallback(u16 code, void *sender, void *listener, EventData data);
 
     InputManager &inputManager;
-    EventContext context = NULL_CONTEXT;
     u32 vbo, vao;
     u8 *font;
     u32 fontID;
@@ -48,4 +49,5 @@ class Renderer {
     unsigned char *button;
     u32 buttonID;
     std::map<char, Character> characters;
+    Shader s;
 };

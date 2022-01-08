@@ -17,12 +17,8 @@ class Application {
     void Run();
 
     private:
-    // init functions
-    void initRenderer();
-
     InputManager inputManager;
     Window window{inputManager};
-    Filesystem filesystem{inputManager};
     Renderer renderer{inputManager};
-    Shader shader;
+    Filesystem filesystem{inputManager};
 };

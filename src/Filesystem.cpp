@@ -145,9 +145,10 @@ bool Filesystem::ControlEvent(u16 code, void *sender, void *listener, EventData 
         filesystem->SaveFile();
     } else if (code == GLFW_KEY_Q && data.action == GLFW_PRESS && data.mods & GLFW_MOD_CONTROL) {
         filesystem->Close();
-    } else if (filesystem->context == FILE_CONTEXT && data.action == GLFW_PRESS) {
+        filesystem->context = NULL_CONTEXT;
+    } else if (filesystem->context == FILE_CONTEXT && data.action != GLFW_RELEASE) {
         filesystem->FileContext(code, data);
-    } else if (filesystem->context == TEXT_CONTEXT && data.action == GLFW_PRESS) {
+    } else if (filesystem->context == TEXT_CONTEXT && data.action != GLFW_RELEASE) {
         filesystem->TextContext(code, data);
     }
 

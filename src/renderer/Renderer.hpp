@@ -2,6 +2,7 @@
 
 #include "../Defines.hpp"
 #include "Shader.hpp"
+#include "input/InputManager.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -19,7 +20,7 @@ struct Character {
 
 class Renderer {
     public:
-    Renderer();
+    Renderer(InputManager &im);
     ~Renderer();
 
     void DrawFrame();
@@ -30,9 +31,15 @@ class Renderer {
     
     static void WindowResizeCallback(GLFWwindow *window, int width, int height);
 
+    int deltaX = 0;
+    int deltaY = 0;
+
     private:
     void BeginFrame();
+    static bool RendererCallback(u16 code, void *sender, void *listener, EventData data);
 
+    InputManager &inputManager;
+    EventContext context = NULL_CONTEXT;
     u32 vbo, vao;
     u8 *font;
     u32 fontID;

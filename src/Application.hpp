@@ -23,7 +23,6 @@ class Application {
     InputManager inputManager;
     Window window{inputManager};
     Filesystem filesystem{inputManager};
-
-    Renderer renderer;
+    Renderer renderer{inputManager};
     Shader shader;
 };

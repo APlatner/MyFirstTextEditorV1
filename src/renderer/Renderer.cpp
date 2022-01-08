@@ -12,14 +12,17 @@
 
 const int fontsize = 16;
 
-Renderer::Renderer() {
+Renderer::Renderer(InputManager &im) : inputManager{im} {
+    inputManager.RegisterEvent(GLFW_KEY_PAGE_UP, this, RendererCallback);
+    inputManager.RegisterEvent(GLFW_KEY_PAGE_DOWN, this, RendererCallback);
     if (glewInit() != GLEW_OK) {
         std::runtime_error("Failed to init GLEW!");
     }
 }
 
 Renderer::~Renderer() {
-
+    inputManager.UnRegisterEvent(GLFW_KEY_PAGE_UP, this, RendererCallback);
+    inputManager.UnRegisterEvent(GLFW_KEY_PAGE_DOWN, this, RendererCallback);
 }
 
 void Renderer::initFreetype(const char *fontPath) {
@@ -189,18 +192,15 @@ void Renderer::renderChar(Shader &s, const char *text, glm::uvec2 pos, glm::uvec
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(vao);
     bool full = false;
-    float x = (float)pos.x;
-    float y = (float)pos.y;
-    for (u32 i = 0; text[i] != '\0'; i++) {
+    float x = pos.x;
+    float y = pos.y;
+    x -= deltaX;
+    y -= deltaY;
+    for (uint32_t i = 0; text[i] != '\0'; i++) {
         Character c = characters[text[i]];
         if (text[i] == '\n') {
             x = pos.x;
-            if (y + characters['I'].Size.y * scale * margin < 0) {
-                printf("Out of space\n");
-                return;
-            } else {
-                y += characters['I'].Size.y * scale * margin;
-            }
+            y += characters['I'].Size.y * scale * margin;
         } else if (text[i] == '\t') {
             x += (characters['a'].Advance >> 6) * scale * 4;
         } else if ((x < size.x + pos.x ) && (x >= pos.x) && (y < size.y + pos.y) && y >= pos.y) {
@@ -230,7 +230,7 @@ void Renderer::renderChar(Shader &s, const char *text, glm::uvec2 pos, glm::uvec
 
             x += (c.Advance >> 6) * scale;
         }
-        if (showCursor && i == cursorLoc) {
+        if (showCursor && i == cursorLoc && y > 0) {
         float xpos = x;
         float ypos = y;
 
@@ -269,4 +269,15 @@ void Renderer::BeginFrame() {
 
 void Renderer::WindowResizeCallback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
+}
+
+bool Renderer::RendererCallback(u16 code, void *sender, void *listener, EventData data) {
+    Renderer *renderer = (Renderer*)listener;
+    if (data.action == GLFW_PRESS && code == GLFW_KEY_PAGE_UP) {
+        renderer->deltaY += 16;
+    } else if (data.action == GLFW_PRESS && code == GLFW_KEY_PAGE_DOWN) {
+        renderer->deltaY -= 16;
+    }
+    
+    return true;
 }

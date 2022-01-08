@@ -22,6 +22,7 @@ Window::Window(InputManager &im) : inputManager{im} {
     glfwSetWindowSizeCallback(window, Renderer::WindowResizeCallback);
     glfwSetKeyCallback(window, InputManager::KeyCallback);
     glfwSetMouseButtonCallback(window, InputManager::MouseButtonCallback);
+    glfwSetScrollCallback(window, InputManager::ScrollCallback);
     glfwSetWindowUserPointer(window, &inputManager);
 }
 

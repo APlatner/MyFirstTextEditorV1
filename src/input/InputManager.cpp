@@ -62,6 +62,10 @@ void InputManager::MouseButtonCallback(GLFWwindow *window, int button, int actio
     
 }
 
+void InputManager::ScrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
+    
+}
+
 bool InputManager::ControlCallback(u16 code, void *sender, void *listener, EventData data) {
     if (((InputManager*)sender)->context == NULL_CONTEXT && code == GLFW_KEY_LEFT_CONTROL && data.action == GLFW_PRESS) {
         ((InputManager*)sender)->context = CONTROL_CONTEXT;

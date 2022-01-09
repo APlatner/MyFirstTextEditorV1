@@ -107,7 +107,7 @@ Filesystem::~Filesystem() {
     for (u16 i = 0; i < 44; i++) {
         inputManager.UnRegisterEvent(codes[i], this, ControlEvent);
     }
-    if (activeFile == NULL) {
+    if (activeFileName != "") {
         Close();
     }
 }

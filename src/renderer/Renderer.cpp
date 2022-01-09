@@ -25,6 +25,10 @@ Renderer::Renderer(InputManager &im) : inputManager{im} {
         std::runtime_error("Failed to init GLEW!");
     }
 
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(GLDebugMessageCallback, NULL);
+
     initFreetype("res/fonts/NotoSansMono-Regular-Nerd-Font-Complete.ttf");
 
     glEnable(GL_CULL_FACE);
@@ -33,8 +37,7 @@ Renderer::Renderer(InputManager &im) : inputManager{im} {
     s.init("res/shaders/text_shader.vert", "res/shaders/text_shader.frag");
     s.use();
 
-    glm::mat4 projection = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f);
-    glUniformMatrix4fv(glGetUniformLocation(s.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    
 }
 
 Renderer::~Renderer() {
@@ -167,20 +170,16 @@ void Renderer::initFreetype(const char *fontPath) {
     FT_Done_Face(face);
     FT_Done_FreeType(library);
 
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, nullptr, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    
 }
 
-void Renderer::render(Shader &shader, VertexBuffer &vertexBuffer, IndexBuffer &indexBuffer) {
+void Renderer::render(Shader &shader, VertexArray &vertexArray, VertexBuffer &vertexBuffer, IndexBuffer &indexBuffer, uint32_t count, uint32_t &textureID) {
     shader.use();
     vertexBuffer.Bind();
+    vertexArray.Bind();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glDrawArrays(GL_TRIANGLES, 0, count);
     // indexBuffer.Bind();
     // glDrawElements(GL_TRIANGLES, indexBuffer.GetCount(), )
     // glUniform3f(glGetUniformLocation(s.ID, "textColor"), color.x, color.y, color.z);
@@ -302,4 +301,88 @@ bool Renderer::RendererCallback(u16 code, void *sender, void *listener, EventDat
     }
     
     return true;
+}
+
+void Renderer::GLDebugMessageCallback(uint32_t source, uint32_t type, uint32_t id, uint32_t severity, int32_t length, const char *message, const void *userParam) {
+    const char *_source;
+    const char *_type;
+    const char *_severity;
+    switch (source) {
+        case GL_DEBUG_SOURCE_API:
+            _source = "API";
+            break;
+        case GL_DEBUG_SOURCE_APPLICATION:
+            _source = "Application";
+            break;
+        case GL_DEBUG_SOURCE_OTHER:
+            _source = "Other";
+            break;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER:
+            _source = "Shader Compiler";
+            break;
+        case GL_DEBUG_SOURCE_THIRD_PARTY:
+            _source = "Third Party";
+            break;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+            _source = "Window System";
+            break;
+        default:
+            _source = "Unknown";
+    }
+    switch (type) {
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+            _type = "Depreciated Behavior";
+            break;
+        case GL_DEBUG_TYPE_ERROR:
+            _type = "Error";
+            break;
+        case GL_DEBUG_TYPE_MARKER:
+            _type = "Marker";
+            break;
+        case GL_DEBUG_TYPE_OTHER:
+            _type = "Other";
+            break;
+        case GL_DEBUG_TYPE_PERFORMANCE:
+            _type = "Performance";
+            break;
+        case GL_DEBUG_TYPE_POP_GROUP:
+            _type = "Pop Group";
+            break;
+        case GL_DEBUG_TYPE_PORTABILITY:
+            _type = "Portability";
+            break;
+        case GL_DEBUG_TYPE_PUSH_GROUP:
+            _type = "Push Group";
+            break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+            _type = "Undefined Behavior";
+            break;
+        default:
+            _type = "Unknown";
+    }
+    switch (severity)
+    {
+    case GL_DEBUG_SEVERITY_HIGH: {
+        _severity = "High";
+        // glfwSetWindowShouldClose((GLFWwindow *)userParam, GLFW_TRUE);
+    } break;
+    case GL_DEBUG_SEVERITY_MEDIUM: {
+        _severity = "Medium";
+        // glfwSetWindowShouldClose((GLFWwindow *)userParam, GLFW_TRUE);
+    } break;
+    case GL_DEBUG_SEVERITY_LOW: {
+        _severity = "Low";
+        // glfwSetWindowShouldClose((GLFWwindow *)userParam, GLFW_TRUE);
+    } break;
+    case GL_DEBUG_SEVERITY_NOTIFICATION:
+        _severity = "Notification";
+        break;
+    default:
+        _severity = "Unknown";
+        break;
+    }
+
+    if (severity != GL_DEBUG_SEVERITY_NOTIFICATION) {
+        printf("Source: %s, Type: %s, ID: %u, Severity: %s, Message: %s\n", _source, _type, id, _severity, message);
+    }
 }

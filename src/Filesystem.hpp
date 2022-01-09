@@ -5,7 +5,9 @@
 #include "container/TextBuffer.hpp"
 #include "renderer/Shader.hpp"
 #include "renderer/VertexBuffer.hpp"
+#include "renderer/VertexArray.hpp"
 #include "renderer/IndexBuffer.hpp"
+#include "renderer/Renderer.hpp"
 
 #include <cstdio>
 #include <cstdlib>
@@ -30,12 +32,30 @@ class Filesystem {
     std::string activeFileName;
     FILE *activeFile;
     EventContext context;
+
+
     Shader s;
     VertexBuffer vbo;
+    VertexArray vao;
     IndexBuffer ibo;
+
+    // buffers
+    
+    // textarea info
+    glm::vec3 color;
+    glm::uvec2 position;
+    glm::uvec2 size;
+    float fontScale = 1;
+    float fontMargin = 1.618;
+
+    // texture IDs
+    uint32_t fontID;
+    uint32_t cursorID;
 
     private:
     static bool ControlEvent(u16 code, void *sender, void *listener, EventData data);
     void FileContext(u16 code, EventData data);
     void TextContext(u16 code, EventData data);
+
+    Character characters[256];
 };

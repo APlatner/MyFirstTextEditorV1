@@ -2,6 +2,7 @@
 
 #include "../Defines.hpp"
 #include "Shader.hpp"
+#include "VertexArray.hpp"
 #include "VertexBuffer.hpp"
 #include "IndexBuffer.hpp"
 #include "input/InputManager.hpp"
@@ -27,7 +28,7 @@ class Renderer {
 
     void DrawFrame();
 
-    void render(Shader &shader, VertexBuffer &vertexBuffer, IndexBuffer &indexBuffer);
+    void render(Shader &shader, VertexArray &vertexArray, VertexBuffer &vertexBuffer, IndexBuffer &indexBuffer, uint32_t count, uint32_t &textureID);
     void renderChar(const char *text, glm::uvec2 pos, glm::uvec2 size, float scale, glm::vec3 color, bool showCursor, u32 cursorLoc, float margin);
     void initFreetype(const char *fontPath);
     
@@ -39,7 +40,7 @@ class Renderer {
     private:
     void BeginFrame();
     static bool RendererCallback(u16 code, void *sender, void *listener, EventData data);
-
+    static void GLDebugMessageCallback(uint32_t source, uint32_t type, uint32_t id, uint32_t severity, int32_t length, const char *message, const void *userParam);
     InputManager &inputManager;
     u32 vbo, vao;
     u8 *font;

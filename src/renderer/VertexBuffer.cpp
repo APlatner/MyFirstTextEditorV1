@@ -13,6 +13,7 @@ VertexBuffer::~VertexBuffer() {
 void VertexBuffer::StoreData(const void *data, uint64_t size) {
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 	glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
+	count = size;
 }
 
 void VertexBuffer::Bind() const {

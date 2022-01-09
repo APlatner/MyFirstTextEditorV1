@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include <cstdio>
+
 #define TRUE 1
 #define FALSE 0
 

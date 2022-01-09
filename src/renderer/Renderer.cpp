@@ -19,8 +19,6 @@
 const int fontsize = 16;
 
 Renderer::Renderer(InputManager &im) : inputManager{im} {
-    inputManager.RegisterEvent(GLFW_KEY_PAGE_UP, this, RendererCallback);
-    inputManager.RegisterEvent(GLFW_KEY_PAGE_DOWN, this, RendererCallback);
     if (glewInit() != GLEW_OK) {
         std::runtime_error("Failed to init GLEW!");
     }
@@ -41,8 +39,7 @@ Renderer::Renderer(InputManager &im) : inputManager{im} {
 }
 
 Renderer::~Renderer() {
-    inputManager.UnRegisterEvent(GLFW_KEY_PAGE_UP, this, RendererCallback);
-    inputManager.UnRegisterEvent(GLFW_KEY_PAGE_DOWN, this, RendererCallback);
+    
 }
 
 void Renderer::initFreetype(const char *fontPath) {
@@ -175,32 +172,11 @@ void Renderer::initFreetype(const char *fontPath) {
 
 void Renderer::render(Shader &shader, VertexArray &vertexArray, VertexBuffer &vertexBuffer, IndexBuffer &indexBuffer, uint32_t count, uint32_t &textureID) {
     shader.use();
-    vertexBuffer.Bind();
     vertexArray.Bind();
+    vertexBuffer.Bind();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
     glDrawArrays(GL_TRIANGLES, 0, count);
-    // indexBuffer.Bind();
-    // glDrawElements(GL_TRIANGLES, indexBuffer.GetCount(), )
-    // glUniform3f(glGetUniformLocation(s.ID, "textColor"), color.x, color.y, color.z);
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindVertexArray(vao);
-    // glm::uvec2 pos, glm::uvec2 size, glm::vec3 color @params
-    // float vertices[6][4] = {
-    //     {(float)pos.x, (float)(pos.y + size.y), 0.0f, 1.0f},
-    //     {(float)(pos.x + size.x), (float)pos.y, 1.0f, 0.0f},
-    //     {(float)pos.x, (float)pos.y,            0.0f, 0.0f},
-
-    //     {(float)pos.x, (float)(pos.y + size.y), 0.0f, 1.0f},
-    //     {(float)(pos.x + size.x), (float)(pos.y + size.y), 1.0f, 1.0f},
-    //     {(float)(pos.x + size.x), (float)pos.y, 1.0f, 0.0f}
-    // };
-
-    // glBindTexture(GL_TEXTURE_2D, buttonID);
-    // glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    // glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-    // glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void Renderer::renderChar(const char *text, glm::uvec2 pos, glm::uvec2 size, float scale, glm::vec3 color, bool showCursor, u32 cursorLoc, float margin) {
@@ -213,8 +189,6 @@ void Renderer::renderChar(const char *text, glm::uvec2 pos, glm::uvec2 size, flo
     bool full = false;
     float x = pos.x;
     float y = pos.y;
-    x -= deltaX;
-    y -= deltaY;
     for (uint32_t i = 0; text[i] != '\0'; i++) {
         Character c = characters[text[i]];
         if (text[i] == '\n') {
@@ -288,19 +262,6 @@ void Renderer::BeginFrame() {
 
 void Renderer::WindowResizeCallback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
-    // glm::mat4 projection = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f);
-    // glUniformMatrix4fv(glGetUniformLocation(s.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-}
-
-bool Renderer::RendererCallback(u16 code, void *sender, void *listener, EventData data) {
-    Renderer *renderer = (Renderer*)listener;
-    if (data.action == GLFW_PRESS && code == GLFW_KEY_PAGE_UP) {
-        renderer->deltaY += 16;
-    } else if (data.action == GLFW_PRESS && code == GLFW_KEY_PAGE_DOWN) {
-        renderer->deltaY -= 16;
-    }
-    
-    return true;
 }
 
 void Renderer::GLDebugMessageCallback(uint32_t source, uint32_t type, uint32_t id, uint32_t severity, int32_t length, const char *message, const void *userParam) {

@@ -29,16 +29,16 @@ FileManager
 ### Application Lifetime
 1. start
     * init input manager
-    * init filesystem
     * init window
     * init renderer
+    * init filesystem
 2. run application
     * render application
     * get input
 3. shutdown application
+    * shutdown filesystem
     * shutdown renderer
     * shutdown window
-    * shutdown filesystem
     * shutdown input manager
 
 ### Input Manager
@@ -61,9 +61,16 @@ FileManager
 * split buffer for storing currently editing text
 * linked list of buffers?
 
-### Features
+### Current Features
 * display hardware accelerated text
-* ~~open, edit, save, and close files~~
+* open, edit, save, and close files safely
+
+### Upcoming Features
 * display current working directory
+* vertical and horizontal text scrolling
+* vertical movement with arrow keys
+
+### Planned Features
 * allow for yaml configuration of color scheme, syntax highlighting, etc..
 * integrated terminal support
+* multithreading support

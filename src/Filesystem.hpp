@@ -35,11 +35,13 @@ class Filesystem {
 
 
     Shader s;
+    // buffers
     VertexBuffer vbo;
     VertexArray vao;
     IndexBuffer ibo;
 
-    // buffers
+    VertexBuffer cursorVBO;
+    VertexArray cursorVAO;
     
     // textarea info
     glm::vec3 color;
@@ -47,6 +49,8 @@ class Filesystem {
     glm::uvec2 size;
     float fontScale = 1;
     float fontMargin = 1.618;
+    int deltaX = 0;
+    int deltaY = 0;
 
     // texture IDs
     uint32_t fontID;

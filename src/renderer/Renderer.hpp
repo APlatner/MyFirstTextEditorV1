@@ -34,9 +34,6 @@ class Renderer {
     
     static void WindowResizeCallback(GLFWwindow *window, int width, int height);
 
-    int deltaX = 0;
-    int deltaY = 0;
-
     private:
     void BeginFrame();
     static bool RendererCallback(u16 code, void *sender, void *listener, EventData data);

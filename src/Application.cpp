@@ -24,8 +24,10 @@ void Application::Run() {
         }
 
         renderer.DrawFrame();
-        // renderer.renderChar(filesystem.textBuffer.ToString().c_str(), glm::uvec2{10, 10}, glm::vec2{600, 600}, 1, glm::vec3{1.0f}, showCursor, filesystem.textBuffer.GetCursorPos() - 1, 1.618);
         renderer.render(filesystem.s, filesystem.vao, filesystem.vbo, filesystem.ibo, (filesystem.textBuffer.ToString().length()) * 6, filesystem.fontID);
+        if (showCursor) {
+            renderer.render(filesystem.s, filesystem.cursorVAO, filesystem.cursorVBO, filesystem.ibo, 6, filesystem.cursorID);
+        }
         window.SwapBuffers();
         glfwPollEvents();
     }

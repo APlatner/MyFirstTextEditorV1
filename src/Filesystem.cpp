@@ -55,9 +55,11 @@ Filesystem::Filesystem(InputManager &im) : inputManager{im} {
         GLFW_KEY_LEFT,
         GLFW_KEY_RIGHT,
         GLFW_KEY_HOME,
-        GLFW_KEY_END
+        GLFW_KEY_END,
+        GLFW_KEY_PAGE_UP,
+        GLFW_KEY_PAGE_DOWN
     };
-    for (u16 i = 0; i < 44; i++) {
+    for (u16 i = 0; i < 46; i++) {
         inputManager.RegisterEvent(codes[i], this, ControlEvent);
     }
     activeFileName = "";
@@ -108,9 +110,11 @@ Filesystem::~Filesystem() {
         GLFW_KEY_LEFT,
         GLFW_KEY_RIGHT,
         GLFW_KEY_HOME,
-        GLFW_KEY_END
+        GLFW_KEY_END,
+        GLFW_KEY_PAGE_UP,
+        GLFW_KEY_PAGE_DOWN
     };
-    for (u16 i = 0; i < 44; i++) {
+    for (u16 i = 0; i < 46; i++) {
         inputManager.UnRegisterEvent(codes[i], this, ControlEvent);
     }
     if (activeFileName != "") {
@@ -227,43 +231,30 @@ bool Filesystem::InitRenderer() {
     FT_Done_Face(face);
     FT_Done_FreeType(library);
 
-    return true;
-}
-
-bool Filesystem::PrepBuffers() {
     s.init("res/shaders/text_shader.vert", "res/shaders/text_shader.frag");
     s.use();
     glm::mat4 projection = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f);
     glUniformMatrix4fv(glGetUniformLocation(s.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+    color  = glm::vec3{1.0f, 1.0f, 1.0f};
+    position = glm::uvec2{10, 10};
+    size = glm::uvec2{600, 600};
+    return true;
+}
+
+bool Filesystem::PrepBuffers() {
     std::string text = textBuffer.ToString();
     vbo.StoreData(nullptr, (text.length()) * 6 * 4 * sizeof(float));
     BufferLayout layout;
     vao.AddBuffer(vbo, layout);
-    color  = glm::vec3{1.0f, 1.0f, 1.0f};
-    position = glm::uvec2{10, 10};
-    size = glm::uvec2{600, 600};
+    cursorVBO.StoreData(nullptr, 6 * 4 * sizeof(float));
+    cursorVAO.AddBuffer(cursorVBO, layout);
     glUniform3f(glGetUniformLocation(s.ID, "textColor"), color.x, color.y, color.z);
 
     float x = position.x;
     float y = position.y;
-    // if (text.length() == 0) {
-    //     float xpos = x;
-    //     float ypos = y;
-
-    //     float w = fontsize / 12 * fontScale;
-    //     float h = fontsize * fontScale;
-
-    //     float vertices[6][4] {
-    //         {xpos, ypos + h, 0.0f, 1.0f},
-    //         {xpos + w, ypos, 1.0f, 0.0f},
-    //         {xpos, ypos, 0.0f, 0.0f},
-
-    //         {xpos, ypos + h, 0.0f, 1.0f},
-    //         {xpos + w, ypos + h, 1.0f, 1.0f},
-    //         {xpos + w, ypos, 1.0f, 0.0f}
-    //     };
-    //     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-    // }
+    x += deltaX;
+    y += deltaY;
+    vbo.Bind();
     for (uint32_t i = 0; i < text.length(); i++) {
         Character c = characters[(int)text[i]];
         if (text[i] == '\n') {
@@ -271,7 +262,7 @@ bool Filesystem::PrepBuffers() {
             y += characters[(int)'I'].Size.y * fontScale * fontMargin;
         } else if (text[i] == '\t') {
             x += (characters[(int)'a'].Advance >> 6) * fontScale * 4;
-        } else if ((x < size.x + position.x ) && (x >= position.x) && (y < size.y + position.y) && y >= position.y) {
+        } else if ((x < size.x + position.x ) && (x >= position.x) && (y < size.y + position.y)) {
             float xpos = x + c.Bearing.x * fontScale;
             float ypos = y + (fontsize  - c.Bearing.y) * fontScale;
 
@@ -287,37 +278,31 @@ bool Filesystem::PrepBuffers() {
                 {xpos + w, ypos + h, c.End.x, c.End.y},
                 {xpos + w, ypos, c.End.x, c.Start.y}
             };
+            
             glBufferSubData(GL_ARRAY_BUFFER, i * 24 * sizeof(float), sizeof(vertices), vertices);
-            // printf("buffer sub data offset: %lu\n", i * 24 * sizeof(float));
-            // printf("xpos: %f, ypos: %f, texX: %f, texY: %f\n", vertices[0][0], vertices[0][1], vertices[0][2], vertices[0][3]);
-            // vertices[0 + i * 24] = xpos;
-            // vertices[1 + i * 24] = ypos + h;
-            // vertices[2 + i * 24] = c.Start.x;
-            // vertices[3 + i * 24] = c.End.y;
-            // vertices[4 + i * 24] = xpos + w;
-            // vertices[5 + i * 24] = ypos;
-            // vertices[6 + i * 24] = c.End.x;
-            // vertices[7 + i * 24] = c.Start.y;
-            // vertices[8 + i * 24] = xpos;
-            // vertices[9 + i * 24] = ypos;
-            // vertices[10 + i * 24] = c.Start.x;
-            // vertices[11 + i * 24] = c.Start.y;
-            // vertices[12 + i * 24] = xpos;
-            // vertices[13 + i * 24] = ypos + h;
-            // vertices[14 + i * 24] = c.Start.x;
-            // vertices[15 + i * 24] = c.End.y;
-            // vertices[16 + i * 24] = xpos + w;
-            // vertices[17 + i * 24] = ypos + h;
-            // vertices[18 + i * 24] = c.End.x;
-            // vertices[19 + i * 24] = c.End.y;
-            // vertices[20 + i * 24] = xpos + w;
-            // vertices[21 + i * 24] = ypos;
-            // vertices[22 + i * 24] = c.End.x;
-            // vertices[23 + i * 24] = c.Start.y;
-
+            
             x += (c.Advance >> 6) * fontScale;
         }
-        if (true && i == textBuffer.GetCursorPos() - 1) {
+        if (i == textBuffer.GetCursorPos() - 1) {
+            float xpos = x;
+            float ypos = y;
+
+            float w = fontsize / 12 * fontScale;
+            float h = fontsize * fontScale;
+            float vertices[6][4] {
+                {xpos, ypos + h, 0.0f, 1.0f},
+                {xpos + w, ypos, 1.0f, 0.0f},
+                {xpos, ypos, 0.0f, 0.0f},
+
+                {xpos, ypos + h, 0.0f, 1.0f},
+                {xpos + w, ypos + h, 1.0f, 1.0f},
+                {xpos + w, ypos, 1.0f, 0.0f}
+            };
+            cursorVBO.Bind();
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+            vbo.Bind();
+        }
+        if (text.length() == 0) {
             float xpos = x;
             float ypos = y;
 
@@ -333,32 +318,8 @@ bool Filesystem::PrepBuffers() {
                 {xpos + w, ypos + h, 1.0f, 1.0f},
                 {xpos + w, ypos, 1.0f, 0.0f}
             };
-
-            // vertices[0 + i * 24] = xpos;
-            // vertices[1 + i * 24] = ypos + h;
-            // vertices[2 + i * 24] = 0.0f;
-            // vertices[3 + i * 24] = 1.0f;
-            // vertices[4 + i * 24] = xpos + w;
-            // vertices[5 + i * 24] = ypos;
-            // vertices[6 + i * 24] = 1.0f;
-            // vertices[7 + i * 24] = 0.0f;
-            // vertices[8 + i * 24] = xpos;
-            // vertices[9 + i * 24] = ypos;
-            // vertices[10 + i * 24] = 0.0f;
-            // vertices[11 + i * 24] = 0.0f;
-            // vertices[12 + i * 24] = xpos;
-            // vertices[13 + i * 24] = ypos + h;
-            // vertices[14 + i * 24] = 0.0f;
-            // vertices[15 + i * 24] = 1.0f;
-            // vertices[16 + i * 24] = xpos + w;
-            // vertices[17 + i * 24] = ypos + h;
-            // vertices[18 + i * 24] = 1.0f;
-            // vertices[19 + i * 24] = 1.0f;
-            // vertices[20 + i * 24] = xpos + w;
-            // vertices[21 + i * 24] = ypos;
-            // vertices[22 + i * 24] = 1.0f;
-            // vertices[23 + i * 24] = 0.0f;
-            // glBufferSubData(GL_ARRAY_BUFFER, i * 24 * sizeof(float), sizeof(vertices), vertices);
+            cursorVBO.Bind();
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
         }
     }
 
@@ -441,6 +402,14 @@ void Filesystem::TextContext(u16 code, EventData data) {
             break;
         case GLFW_KEY_END:
             textBuffer.LineAdvance();
+            break;
+        case GLFW_KEY_PAGE_UP:
+            deltaY += 16;
+            PrepBuffers();
+            break;
+        case GLFW_KEY_PAGE_DOWN:
+            deltaY -= 16;
+            PrepBuffers();
             break;
         case GLFW_KEY_BACKSPACE:
             textBuffer.Delete();

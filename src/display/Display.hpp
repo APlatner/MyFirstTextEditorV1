@@ -8,7 +8,7 @@ class Display {
 	Display();
 	~Display();
 
-	void Init();
+	virtual void Init();
 	virtual void Render();
 
 	private:
@@ -16,7 +16,6 @@ class Display {
 	VertexBuffer vbo;
 	VertexArray vao;
 	IndexBuffer ibo;
-	uint32_t textureID;
 
 	glm::vec2 position;
 	glm::vec2 size;

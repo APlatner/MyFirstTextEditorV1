@@ -8,8 +8,6 @@ Display::~Display() {
 
 }
 
-void Display::Init() {
-
-}
+void Display::Init() {}
 
 void Display::Render() {}

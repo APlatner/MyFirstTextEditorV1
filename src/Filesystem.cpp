@@ -152,11 +152,21 @@ bool Filesystem::InitRenderer() {
     color  = glm::vec3{1.0f, 1.0f, 1.0f};
     position = glm::uvec2{200, 10};
     size = glm::uvec2{600, 600};
+
+    PrepBuffers();
+
     return true;
 }
 
 bool Filesystem::PrepBuffers() {
-    std::string text = textBuffer.ToString();
+    std::string text;
+    if (context == FILE_CONTEXT) {
+        text = "SELECT A FILE TO OPEN\n" + activeFileName;
+    } else if (context == TEXT_CONTEXT) {
+        text = textBuffer.ToString();
+    } else {
+        return true;
+    }
     vbo.StoreData(nullptr, (text.length()) * 6 * 4 * sizeof(float));
     BufferLayout layout;
     vao.AddBuffer(vbo, layout);
@@ -169,7 +179,6 @@ bool Filesystem::PrepBuffers() {
     x += deltaX;
     y += deltaY;
     vbo.Bind();
-    
     for (uint32_t i = 0; i < text.length(); i++) {
         Character c = fontid.GetChar(text[i]);
         if (text[i] == '\n') {
@@ -270,7 +279,13 @@ void Filesystem::PrepCursor() {
 }
 
 void Filesystem::Render(bool showCursor) {
-    Renderer::render(s, vao, vbo, ibo, (textBuffer.ToString().length()) * 6, fontid.fontID);
+    std::string text;
+    if (context == FILE_CONTEXT) {
+        text = "SELECT A FILE TO OPEN\n" + activeFileName;
+    } else if (context == TEXT_CONTEXT) {
+        text = textBuffer.ToString();
+    }
+    Renderer::render(s, vao, vbo, ibo, (text.length()) * 6, fontid.fontID);
     if (showCursor) {
         Renderer::render(s, cursorVAO, cursorVBO, ibo, 6, cursorID);
     }
@@ -305,7 +320,6 @@ bool Filesystem::ControlEvent(u16 code, void *sender, void *listener, EventData 
     Filesystem *filesystem = (Filesystem*)listener;
     if (code == GLFW_KEY_O && data.action == GLFW_PRESS && data.mods & GLFW_MOD_CONTROL) {
         filesystem->context = FILE_CONTEXT;
-        printf("FILE_CONTEXT\n");
     } else if (code == GLFW_KEY_S && data.action == GLFW_PRESS && data.mods & GLFW_MOD_CONTROL) {
         filesystem->SaveFile();
     } else if (code == GLFW_KEY_Q && data.action == GLFW_PRESS && data.mods & GLFW_MOD_CONTROL) {
@@ -316,6 +330,7 @@ bool Filesystem::ControlEvent(u16 code, void *sender, void *listener, EventData 
     } else if (filesystem->context == TEXT_CONTEXT && data.action != GLFW_RELEASE) {
         filesystem->TextContext(code, data);
     }
+    filesystem->PrepBuffers();
 
     return true;
 }
@@ -326,22 +341,17 @@ void Filesystem::FileContext(u16 code, EventData data) {
             activeFileName.pop_back();
             break;
         case GLFW_KEY_ENTER: {
-            printf("\n");
-            Open();
             context = TEXT_CONTEXT;
-            printf("TEXT_CONTEXT\n");
+            Open();
         } break;
         case GLFW_KEY_PERIOD: {
             activeFileName += '.';
-            printf("%c", '.');
-            fflush(stdout);
         } break;
         default: {
             activeFileName += (char)(code + 32 * !(data.mods & (GLFW_MOD_SHIFT ^ GLFW_MOD_CAPS_LOCK)));
-            printf("%c", (char)(code + 32 * !(data.mods & (GLFW_MOD_SHIFT ^ GLFW_MOD_CAPS_LOCK))));
-            fflush(stdout);
         }
     }
+    PrepBuffers();
 }
 
 void Filesystem::TextContext(u16 code, EventData data) {

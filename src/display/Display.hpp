@@ -9,10 +9,11 @@ class Display {
 	~Display();
 
 	virtual void Init();
+	virtual void Update();
 	virtual void Render();
 
-	private:
-	Shader s;
+	protected:
+	Shader shader;
 	VertexBuffer vbo;
 	VertexArray vao;
 	IndexBuffer ibo;
@@ -20,7 +21,5 @@ class Display {
 	glm::vec2 position;
 	glm::vec2 size;
 	glm::vec3 background = glm::vec3{0.3f};
-	glm::vec3 foreground = glm::vec3{0.7f};
-	float fontScale = 1;
-    float fontMargin = 1.618;
+	glm::vec3 foreground = glm::vec3{1.0f};
 };

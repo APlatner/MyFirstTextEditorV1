@@ -123,7 +123,6 @@ Filesystem::~Filesystem() {
 }
 
 bool Filesystem::InitRenderer() {
-    glActiveTexture(GL_TEXTURE0);
     uint8_t *cursor = (unsigned char*)malloc(sizeof(char) * fontsize * 4);
     memset(cursor, 0xff, fontsize * 4);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -163,7 +162,7 @@ bool Filesystem::PrepBuffers() {
     if (context == FILE_CONTEXT) {
         text = "SELECT A FILE TO OPEN\n" + activeFileName;
     } else if (context == TEXT_CONTEXT) {
-        text = textBuffer.ToString();
+        text = activeFileName + "\n\n" + textBuffer.ToString();
     } else {
         return true;
     }
@@ -222,7 +221,7 @@ bool Filesystem::PrepBuffers() {
             
             x += (c.Advance >> 6) * fontScale;
         }
-        if (i == textBuffer.GetCursorPos() - 1) {
+        if (i == textBuffer.GetCursorPos() - 1 + activeFileName.length() + 2) {
             float xpos = x;
             float ypos = y;
 
@@ -280,10 +279,13 @@ void Filesystem::PrepCursor() {
 
 void Filesystem::Render(bool showCursor) {
     std::string text;
+    glm::mat4 projection = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f);
+    glUniformMatrix4fv(glGetUniformLocation(s.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     if (context == FILE_CONTEXT) {
         text = "SELECT A FILE TO OPEN\n" + activeFileName;
+        showCursor = false;
     } else if (context == TEXT_CONTEXT) {
-        text = textBuffer.ToString();
+        text = activeFileName + "\n\n" + textBuffer.ToString();
     }
     Renderer::render(s, vao, vbo, ibo, (text.length()) * 6, fontid.fontID);
     if (showCursor) {

@@ -9,6 +9,14 @@ class FileDisplay : public Display {
 	FileDisplay();
 	~FileDisplay();
 
+	void Init();
+	void Update();
+	void Render();
+
 	private:
 	Font font;
+	std::string text;
+	float fontSize = 16.0f;
+	float fontScale = 1.0f;
+    float fontMargin = 1.618;
 };

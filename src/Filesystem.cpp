@@ -123,96 +123,10 @@ Filesystem::~Filesystem() {
 }
 
 bool Filesystem::InitRenderer() {
-    FT_Library library;
-    if (FT_Init_FreeType(&library)) {
-        printf("Failed to init freetype!\n");
-        return false;
-    }
-
-    FT_Face face;
-    if (FT_New_Face(library, "res/fonts/NotoSansMono-Regular-Nerd-Font-Complete.ttf", 0, &face)) {
-        printf("Failed to load font!\n");
-        return false;
-    }
-
-    FT_Set_Pixel_Sizes(face, 0, fontsize);
+    glActiveTexture(GL_TEXTURE0);
     uint8_t *cursor = (unsigned char*)malloc(sizeof(char) * fontsize * 4);
     memset(cursor, 0xff, fontsize * 4);
-    u32 width = 0;
-    u32 height = 0;
-    for (char c = ' '; c < 127; c++) {
-        if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-            printf("ERROR::FREETYPE:Failed to load glyph for %c\n", c);
-            continue;
-        }
-        if (face->glyph->bitmap.rows > height) {
-            height = face->glyph->bitmap.rows;
-        }
-        if (face->glyph->bitmap.width > width) {
-            width = face->glyph->bitmap.width;
-        }
-    }
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    uint8_t *font = (unsigned char*)malloc(sizeof(char) * width * height * 100);
-    memset(font, 0x00, width * height * 100);
-    glm::vec2 offset = glm::vec2(0.0f, 0.0f);
-    glGenTextures(1, &fontID);
-    glBindTexture(GL_TEXTURE_2D, fontID);
-    glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        GL_RED,
-        width * 10,
-        height * 10,
-        0,
-        GL_RED,
-        GL_UNSIGNED_BYTE,
-        font);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    u8 col = 0;
-    u8 row = 0;
-    for (char c = ' '; c < 127; c++) {
-        if (FT_Load_Char(face, c, FT_LOAD_RENDER) != FT_Err_Ok) {
-            printf("ERROR::FREETYPE:Failed to load glyph for %c\n", c);
-            continue;
-        }
-        if (col == 9) {
-            col = 0;
-            row++;
-        } else {
-            col++;
-        }
-        offset.x = width * col;
-        offset.y = height * row;
-        glTexSubImage2D(
-            GL_TEXTURE_2D,
-            0,
-            (int)offset.x,
-            (int)offset.y,
-            face->glyph->bitmap.width,
-            face->glyph->bitmap.rows,
-            GL_RED,
-            GL_UNSIGNED_BYTE,
-            face->glyph->bitmap.buffer);
-
-        Character character = {
-            glm::vec2(offset.x / (width * 10), offset.y / (height * 10)),
-            glm::vec2((offset.x + face->glyph->bitmap.width) / (width * 10), (offset.y + face->glyph->bitmap.rows) / (height * 10)),
-            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-            face->glyph->advance.x
-        };
-
-        characters[(int)c] = character;
-    }
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-
     glGenTextures(1, &cursorID);
     glBindTexture(GL_TEXTURE_2D, cursorID);
     glTexImage2D(
@@ -228,15 +142,15 @@ bool Filesystem::InitRenderer() {
     
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    FT_Done_Face(face);
-    FT_Done_FreeType(library);
+    fontid.LoadFont("res/fonts/NotoSansMono-Regular-Nerd-Font-Complete.ttf", 16);
 
     s.init("res/shaders/text_shader.vert", "res/shaders/text_shader.frag");
     s.use();
+
     glm::mat4 projection = glm::ortho(0.0f, 800.0f, 600.0f, 0.0f);
     glUniformMatrix4fv(glGetUniformLocation(s.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     color  = glm::vec3{1.0f, 1.0f, 1.0f};
-    position = glm::uvec2{10, 10};
+    position = glm::uvec2{200, 10};
     size = glm::uvec2{600, 600};
     return true;
 }
@@ -255,13 +169,14 @@ bool Filesystem::PrepBuffers() {
     x += deltaX;
     y += deltaY;
     vbo.Bind();
+    
     for (uint32_t i = 0; i < text.length(); i++) {
-        Character c = characters[(int)text[i]];
+        Character c = fontid.GetChar(text[i]);
         if (text[i] == '\n') {
             x = position.x;
-            y += characters[(int)'I'].Size.y * fontScale * fontMargin;
+            y += fontid.GetChar('I').Size.y * fontScale * fontMargin;
         } else if (text[i] == '\t') {
-            x += (characters[(int)'a'].Advance >> 6) * fontScale * 4;
+            x += (fontid.GetChar('a').Advance >> 6) * fontScale * 4;
         } else if ((x < size.x + position.x ) && (x >= position.x) && (y < size.y + position.y)) {
             float xpos = x + c.Bearing.x * fontScale;
             float ypos = y + (fontsize  - c.Bearing.y) * fontScale;
@@ -269,17 +184,32 @@ bool Filesystem::PrepBuffers() {
             float w = c.Size.x * fontScale;
             float h = c.Size.y * fontScale;
 
-            float vertices[6][4] {
-                {xpos, ypos + h, c.Start.x, c.End.y},
-                {xpos + w, ypos, c.End.x, c.Start.y},
-                {xpos, ypos, c.Start.x, c.Start.y},
+            if (y >= position.y) {
+                float vertices[6][4] {
+                    {xpos, ypos + h, c.Start.x, c.End.y},
+                    {xpos + w, ypos, c.End.x, c.Start.y},
+                    {xpos, ypos, c.Start.x, c.Start.y},
 
-                {xpos, ypos + h, c.Start.x, c.End.y},
-                {xpos + w, ypos + h, c.End.x, c.End.y},
-                {xpos + w, ypos, c.End.x, c.Start.y}
-            };
+                    {xpos, ypos + h, c.Start.x, c.End.y},
+                    {xpos + w, ypos + h, c.End.x, c.End.y},
+                    {xpos + w, ypos, c.End.x, c.Start.y}
+                };
+                
+                glBufferSubData(GL_ARRAY_BUFFER, i * 24 * sizeof(float), sizeof(vertices), vertices);
+            } else {
+                float vertices[6][4] {
+                    {xpos, ypos + h, 0.0f, 0.0f},
+                    {xpos + w, ypos, 0.0f, 0.0f},
+                    {xpos, ypos, 0.0f, 0.0f},
+
+                    {xpos, ypos + h, 0.0f, 0.0f},
+                    {xpos + w, ypos + h, 0.0f, 0.0f},
+                    {xpos + w, ypos, 0.0f, 0.0f}
+                };
+                
+                glBufferSubData(GL_ARRAY_BUFFER, i * 24 * sizeof(float), sizeof(vertices), vertices);
+            }
             
-            glBufferSubData(GL_ARRAY_BUFFER, i * 24 * sizeof(float), sizeof(vertices), vertices);
             
             x += (c.Advance >> 6) * fontScale;
         }
@@ -289,6 +219,15 @@ bool Filesystem::PrepBuffers() {
 
             float w = fontsize / 12 * fontScale;
             float h = fontsize * fontScale;
+            // float vertices[6][4] {
+            //     {0.0f, 300.0f, 0.0f, 1.0f},
+            //     {200.0f, 0.0f, 1.0f, 0.0f},
+            //     {0.0f, 0.0f, 0.0f, 0.0f},
+
+            //     {0.0f, 300.0f, 0.0f, 1.0f},
+            //     {200.0f, 300.0f, 1.0f, 1.0f},
+            //     {200.0f, 0.0f, 1.0f, 0.0f}
+            // };
             float vertices[6][4] {
                 {xpos, ypos + h, 0.0f, 1.0f},
                 {xpos + w, ypos, 1.0f, 0.0f},
@@ -326,6 +265,17 @@ bool Filesystem::PrepBuffers() {
     return true;
 }
 
+void Filesystem::PrepCursor() {
+
+}
+
+void Filesystem::Render(bool showCursor) {
+    Renderer::render(s, vao, vbo, ibo, (textBuffer.ToString().length()) * 6, fontid.fontID);
+    if (showCursor) {
+        Renderer::render(s, cursorVAO, cursorVBO, ibo, 6, cursorID);
+    }
+}
+
 void Filesystem::Open() {
     activeFile = fopen(activeFileName.c_str(), "r");
     std::string text = "";
@@ -343,7 +293,6 @@ void Filesystem::Close() {
     activeFileName = "";
     fclose(activeFile);
     textBuffer.ClearText();
-    printf("CLOSED\n");
 }
 
 void Filesystem::SaveFile() {
@@ -404,20 +353,16 @@ void Filesystem::TextContext(u16 code, EventData data) {
             textBuffer.LineAdvance();
             break;
         case GLFW_KEY_PAGE_UP:
-            deltaY += 16;
-            PrepBuffers();
+            deltaY -= 16;
             break;
         case GLFW_KEY_PAGE_DOWN:
-            deltaY -= 16;
-            PrepBuffers();
+            deltaY += 16;
             break;
         case GLFW_KEY_BACKSPACE:
             textBuffer.Delete();
-            PrepBuffers();
             break;
         case GLFW_KEY_ENTER:
             textBuffer.Append('\n');
-            PrepBuffers();
             break;
         case GLFW_KEY_LEFT:
             textBuffer.Retreat();
@@ -427,15 +372,27 @@ void Filesystem::TextContext(u16 code, EventData data) {
             break;
         case GLFW_KEY_SPACE:
             textBuffer.Append(' ');
-            PrepBuffers();
             break;
         case GLFW_KEY_PERIOD:
             textBuffer.Append('.');
-            PrepBuffers();
+            break;
+        case GLFW_KEY_0:
+            textBuffer.Append((char)(code + 32 * !(data.mods & (GLFW_MOD_SHIFT ^ GLFW_MOD_CAPS_LOCK))));
+            break;
+        case GLFW_KEY_1:
+        case GLFW_KEY_2:
+        case GLFW_KEY_3:
+        case GLFW_KEY_4:
+        case GLFW_KEY_5:
+        case GLFW_KEY_6:
+        case GLFW_KEY_7:
+        case GLFW_KEY_8:
+        case GLFW_KEY_9:
+            textBuffer.Append((char)(code + 32 * !(data.mods & (GLFW_MOD_SHIFT ^ GLFW_MOD_CAPS_LOCK))));
             break;
         default: {
             textBuffer.Append((char)(code + 32 * !(data.mods & (GLFW_MOD_SHIFT ^ GLFW_MOD_CAPS_LOCK))));
-            PrepBuffers();
         }
     }
+    PrepBuffers();
 }

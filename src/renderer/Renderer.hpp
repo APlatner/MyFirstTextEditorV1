@@ -5,6 +5,7 @@
 #include "VertexArray.hpp"
 #include "VertexBuffer.hpp"
 #include "IndexBuffer.hpp"
+#include "Font.hpp"
 #include "input/InputManager.hpp"
 
 #include <GL/glew.h>
@@ -13,14 +14,6 @@
 
 #include <map>
 
-struct Character {
-    glm::vec2 Start;
-    glm::vec2 End;
-    glm::ivec2 Size;
-    glm::ivec2 Bearing;
-    long Advance;
-};
-
 class Renderer {
     public:
     Renderer(InputManager &im);
@@ -28,10 +21,7 @@ class Renderer {
 
     void DrawFrame();
 
-    void render(Shader &shader, VertexArray &vertexArray, VertexBuffer &vertexBuffer, IndexBuffer &indexBuffer, uint32_t count, uint32_t &textureID);
-    void renderChar(const char *text, glm::uvec2 pos, glm::uvec2 size, float scale, glm::vec3 color, bool showCursor, u32 cursorLoc, float margin);
-    void initFreetype(const char *fontPath);
-    
+    static void render(Shader &shader, VertexArray &vertexArray, VertexBuffer &vertexBuffer, IndexBuffer &indexBuffer, uint32_t count, uint32_t &textureID);
     static void WindowResizeCallback(GLFWwindow *window, int width, int height);
 
     private:

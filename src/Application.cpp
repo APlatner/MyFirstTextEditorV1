@@ -24,10 +24,7 @@ void Application::Run() {
         }
 
         renderer.DrawFrame();
-        renderer.render(filesystem.s, filesystem.vao, filesystem.vbo, filesystem.ibo, (filesystem.textBuffer.ToString().length()) * 6, filesystem.fontID);
-        if (showCursor) {
-            renderer.render(filesystem.s, filesystem.cursorVAO, filesystem.cursorVBO, filesystem.ibo, 6, filesystem.cursorID);
-        }
+        filesystem.Render(showCursor);
         window.SwapBuffers();
         glfwPollEvents();
     }

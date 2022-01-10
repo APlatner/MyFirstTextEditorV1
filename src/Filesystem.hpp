@@ -21,6 +21,7 @@ class Filesystem {
 
     bool InitRenderer();
     bool PrepBuffers();
+    void Render(bool showCursor);
 
     void Open();
     void Close();
@@ -39,6 +40,7 @@ class Filesystem {
     VertexBuffer vbo;
     VertexArray vao;
     IndexBuffer ibo;
+    Font fontid;
 
     VertexBuffer cursorVBO;
     VertexArray cursorVAO;
@@ -60,6 +62,5 @@ class Filesystem {
     static bool ControlEvent(u16 code, void *sender, void *listener, EventData data);
     void FileContext(u16 code, EventData data);
     void TextContext(u16 code, EventData data);
-
-    Character characters[256];
+    void PrepCursor();
 };

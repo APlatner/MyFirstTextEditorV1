@@ -12,17 +12,14 @@ TARGET := $(BINDIR)/byte_me_v1
 .PHONY: run clean
 
 run: $(TARGET)
-	@echo " Running..."
 	./$(TARGET)
 
 clean:
-	@echo " Cleaning..."
-	@echo " rm -f $(OJBS) $(TARGET)"; rm -f $(OJBS) $(TARGET)
+	rm -f $(TARGET)
 
-$(TARGET): $(OJBS)
-	@echo " Linking..."
-	@echo " $(CPP) $^ -o $@ $(LDFLAGS)"; $(CPP) $^ -o $@ $(LDFLAGS)
+$(TARGET): $(SRCS)
+	$(CPP) $^ -o $@ $(LDFLAGS) $(CFLAGS) $(INCDIR)
 
-$(BINDIR)/%.o: $(SRCDIR)/%.cpp
-	@mkdir -p $(@D)
-	@echo " $(CPP) $(CFLAGS) $(INCDIR) -c -o $@ $<"; $(CPP) $(CFLAGS) $(INCDIR) -c -o $@ $<
+# $(BINDIR)/%.o: $(SRCDIR)/%.cpp
+# 	@mkdir -p $(@D)
+# 	$(CPP) $(CFLAGS) $(INCDIR) -c -o $@ $<

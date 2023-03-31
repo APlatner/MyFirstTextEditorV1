@@ -1,5 +1,7 @@
 .vscode
 bin/*
-test.txt
-config.yaml
+*.txt
+*.yaml
 devlog
+res/fonts/*
+res/textures/*
